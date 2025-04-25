@@ -522,10 +522,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 		func Update{{ $i.Table.GoName }}TableBy{{ range $i.Fields }}{{ .GoName }}{{ end }}(
 			ctx context.Context,
 			db DB,
-			updatableModel *Updatable{{ $i.Table.GoName }}Model,
 			{{- range $i.Fields }}
 				{{ .GoName }} {{ .Type }},
-			{{- end -}}
+			{{- end }}
+			updatableModel *Updatable{{ $i.Table.GoName }}Model,
 		) (sql.Result, error) {
 			valuesSetList := []sqli.Statement{}
 
@@ -784,8 +784,8 @@ func NewUpdatable{{ $t.GoName }}Model(
 		func Update{{ $i.Table.GoName }}TableBy{{ .GoName }}(
 			ctx context.Context,
 			db DB,
-			updatableModel *Updatable{{ $i.Table.GoName }}Model,
 			{{ .GoName }} {{ .Type }},
+			updatableModel *Updatable{{ $i.Table.GoName }}Model,
 		) (sql.Result, error) {
 			valuesSetList := []sqli.Statement{}
 

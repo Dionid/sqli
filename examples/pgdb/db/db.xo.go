@@ -8,6 +8,8 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
+
+	"github.com/jmoiron/sqlx"
 )
 
 var (

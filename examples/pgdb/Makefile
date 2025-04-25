@@ -6,7 +6,7 @@ DB_PG="postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${P
 # SQLi
 
 sqli:
-	devbox run xo --src ../../xo --out ./db --schema public schema ${DB_PG}
+	xo --src ../../xo --out ./db --schema public schema ${DB_PG}
 
 # CRM DB
 
@@ -28,10 +28,6 @@ migrate-create:
 
 # Tests
 
-install:
-	curl -fsSL https://get.jetify.com/devbox | bash
-	devbox add go@1.24.2 grc@latest
-
 prepare:
 	docker-compose -f docker-compose.yaml up -d
 	docker logs database 2>&1 | grep -q "database system is ready to accept connections"
@@ -40,4 +36,4 @@ prepare:
 
 test:
 	make prepare
-	devbox run grc go test . -count=1
+	grc go test . -count=1

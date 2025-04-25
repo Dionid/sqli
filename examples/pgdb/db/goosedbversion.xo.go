@@ -332,8 +332,8 @@ func InsertIntoGooseDbVersionTableReturningID(
 func UpdateGooseDbVersionTableByID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableGooseDbVersionModel,
 	ID int,
+	updatableModel *UpdatableGooseDbVersionModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 

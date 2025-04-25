@@ -296,9 +296,9 @@ func DeleteFromOfficeUserTableByOfficeIDUserID(
 func UpdateOfficeUserTableByOfficeIDUserID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableOfficeUserModel,
 	OfficeID uuid.UUID,
 	UserID uuid.UUID,
+	updatableModel *UpdatableOfficeUserModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 
@@ -554,8 +554,8 @@ func InsertIntoOfficeUserTableReturningOfficeID(
 func UpdateOfficeUserTableByOfficeID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableOfficeUserModel,
 	OfficeID uuid.UUID,
+	updatableModel *UpdatableOfficeUserModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 
@@ -669,8 +669,8 @@ func InsertIntoOfficeUserTableReturningUserID(
 func UpdateOfficeUserTableByUserID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableOfficeUserModel,
 	UserID uuid.UUID,
+	updatableModel *UpdatableOfficeUserModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 

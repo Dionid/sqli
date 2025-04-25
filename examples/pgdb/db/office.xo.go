@@ -342,8 +342,8 @@ func InsertIntoOfficeTableReturningName(
 func UpdateOfficeTableByName(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableOfficeModel,
 	Name string,
+	updatableModel *UpdatableOfficeModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 
@@ -492,8 +492,8 @@ func InsertIntoOfficeTableReturningID(
 func UpdateOfficeTableByID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableOfficeModel,
 	ID uuid.UUID,
+	updatableModel *UpdatableOfficeModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 

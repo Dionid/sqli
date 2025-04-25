@@ -408,8 +408,8 @@ func InsertIntoUserTableReturningEmail(
 func UpdateUserTableByEmail(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableUserModel,
 	Email string,
+	updatableModel *UpdatableUserModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 
@@ -576,8 +576,8 @@ func InsertIntoUserTableReturningID(
 func UpdateUserTableByID(
 	ctx context.Context,
 	db DB,
-	updatableModel *UpdatableUserModel,
 	ID uuid.UUID,
+	updatableModel *UpdatableUserModel,
 ) (sql.Result, error) {
 	valuesSetList := []sqli.Statement{}
 
