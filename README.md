@@ -4,13 +4,13 @@ Type-safe generative SQL Query Builder based on you DB schema.
 
 ```go
 
-// # Predefined Queries
+// SQLi generates Predefined Queries
 
 newUserId := uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")
 
 id, err := InsertIntoUserTableReturningID(
-	ctx,
-	db,
+    ctx,
+    db,
     yourdb.InsertableUserModel{
         ID: newUserId,
         Name: "User 1",
@@ -19,7 +19,7 @@ id, err := InsertIntoUserTableReturningID(
 
 println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
-// # Dynamic Queries
+// and you can also use Dynamic Queries
 
 insertQuery, err := sqli.Query(
     sqli.INSERT_INTO(yourdb.UserTable),
