@@ -1,4 +1,4 @@
-package sqlification
+package sqli
 
 import (
 	"database/sql/driver"

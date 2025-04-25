@@ -1,10 +1,10 @@
-package sqlification_test
+package sqli_test
 
 import (
 	"testing"
 
-	. "github.com/Dionid/sqlification"
-	. "github.com/Dionid/sqlification/dbs/crmdb"
+	. "github.com/Dionid/sqli"
+	. "github.com/Dionid/sqli/dbs/crmdb"
 	"github.com/google/uuid"
 )
 
@@ -881,9 +881,6 @@ func TestSelectCount(t *testing.T) {
 }
 
 // TODO: # SELECT SUM
-// ...
-
-// TODO: # SELECT FROM SUB QUERY
 // ...
 
 // TODO: # SELECT JSON_AGG

@@ -743,7 +743,7 @@ func convertField(ctx context.Context, tf transformFunc, f xo.Field) (Field, err
 		GoName:     tf(f.Name),
 		SQLName:    f.Name,
 		Zero:       zero,
-		Default: 	f.Default,
+		Default:    f.Default,
 		IsPrimary:  f.IsPrimary,
 		IsSequence: f.IsSequence,
 		Comment:    f.Comment,
@@ -752,15 +752,15 @@ func convertField(ctx context.Context, tf transformFunc, f xo.Field) (Field, err
 
 // custom override loader.PostgresGoType
 var pqArrMapping = map[string]string{
-	"bool": "pq.BoolArray",
-	"[]byte": "pq.ByteArray",
-	"float64": "pq.Float64Array",
-	"float32": "pq.Float32Array",
-	"int64": "pq.Int64Array",
-	"int32": "pq.Int32Array",
-	"string": "pq.StringArray",
-	"int": "pq.Int32Array",
-	"uuid.UUID": "dioq.UUIDArray",
+	"bool":      "pq.BoolArray",
+	"[]byte":    "pq.ByteArray",
+	"float64":   "pq.Float64Array",
+	"float32":   "pq.Float32Array",
+	"int64":     "pq.Int64Array",
+	"int32":     "pq.Int32Array",
+	"string":    "pq.StringArray",
+	"int":       "pq.Int32Array",
+	"uuid.UUID": "sqli.UUIDArray",
 	// default: "pq.GenericArray"
 }
 

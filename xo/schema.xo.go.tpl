@@ -152,22 +152,22 @@ func (err ErrInvalid{{ $e.GoName }}) Error() string {
 {{- $t := .Data -}}
 
 type {{ $t.GoName }}TableSt struct {
-	dioq.Table
+	sqli.Table
 	{{ range $t.Fields -}}
-		{{ .GoName }} dioq.Column[{{ .Type }}]
+		{{ .GoName }} sqli.Column[{{ .Type }}]
 	{{ end }}
 }
 
 func (t {{ $t.GoName }}TableSt) As(alias string) {{ $t.GoName }}TableSt {
 	t.Table.TableAlias = fmt.Sprintf(`"%s"`, alias)
 	{{ range $t.Fields -}}
-		t.{{ .GoName }} = dioq.NewColumnWithAlias[{{ .Type }}](t.Table, t.{{ .GoName }}.ColumnName, t.{{ .GoName }}.ColumnAlias)
+		t.{{ .GoName }} = sqli.NewColumnWithAlias[{{ .Type }}](t.Table, t.{{ .GoName }}.ColumnName, t.{{ .GoName }}.ColumnAlias)
 	{{ end }}
 
 	return t
 }
 
-var {{ $t.GoName }}TableBase = dioq.Table{
+var {{ $t.GoName }}TableBase = sqli.Table{
 	TableName: `"{{ $t.SQLName }}"`,
 	TableAlias: `"{{ $t.SQLName }}"`,
 }
@@ -175,7 +175,7 @@ var {{ $t.GoName }}TableBase = dioq.Table{
 var {{ $t.GoName }}Table = {{ $t.GoName }}TableSt{
 	Table: {{ $t.GoName }}TableBase,
 {{ range $t.Fields -}}
-	{{ .GoName }}: dioq.NewColumn[{{ .Type }}]({{ $t.GoName }}TableBase, `"{{ .SQLName }}"`),
+	{{ .GoName }}: sqli.NewColumn[{{ .Type }}]({{ $t.GoName }}TableBase, `"{{ .SQLName }}"`),
 {{ end }}
 }
 
@@ -256,24 +256,24 @@ func InsertInto{{ $t.GoName }}Table(
 		return nil, errors.New("Insertable{{ $t.GoName }}Model is nil")
 	}
 
-	valueSetList := make([]dioq.ValuesSetSt, len(modelsList))
+	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
 
 	for i, model := range modelsList {
 		if model == nil {
 			return nil, errors.New("InsertableUserModel is nil")
 		}
 
-		valueSetList[i] = dioq.ValueSet(
+		valueSetList[i] = sqli.ValueSet(
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
-					dioq.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+					sqli.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
 				{{ end -}}
 			{{ end }}
 		)
 	}
 
-	query, err := dioq.Query(
-		dioq.INSERT_INTO(
+	query, err := sqli.Query(
+		sqli.INSERT_INTO(
 			{{ $t.GoName }}Table,
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
@@ -281,7 +281,7 @@ func InsertInto{{ $t.GoName }}Table(
 				{{ end -}}
 			{{ end }}
 		),
-		dioq.VALUES(
+		sqli.VALUES(
 			valueSetList...
 		),
 	)
@@ -301,28 +301,28 @@ func InsertInto{{ $t.GoName }}TableReturningAll(
 		return nil, errors.New("Insertable{{ $t.GoName }}Model is nil")
 	}
 
-	valueSetList := make([]dioq.ValuesSetSt, len(modelsList))
+	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
 
 	for i, model := range modelsList {
 		if model == nil {
 			return nil, errors.New("InsertableUserModel is nil")
 		}
 
-		valueSetList[i] = dioq.ValueSet(
+		valueSetList[i] = sqli.ValueSet(
 			{{- range $t.Fields }}
 				{{- if not .IsSequence -}}
 					{{- if eq .Type "[]uuid.UUID" }}
 						pq.Array(model.{{ .GoName }}),
 					{{ else }}
-						dioq.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+						sqli.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
 					{{- end -}}
 				{{ end -}}
 			{{ end }}
 		)
 	}
 
-	query, err := dioq.Query(
-		dioq.INSERT_INTO(
+	query, err := sqli.Query(
+		sqli.INSERT_INTO(
 			{{ $t.GoName }}Table,
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
@@ -330,10 +330,10 @@ func InsertInto{{ $t.GoName }}TableReturningAll(
 				{{ end -}}
 			{{ end }}
 		),
-		dioq.VALUES(
+		sqli.VALUES(
 			valueSetList...
 		),
-		dioq.RETURNING({{ $t.GoName }}Table.AllColumns()),
+		sqli.RETURNING({{ $t.GoName }}Table.AllColumns()),
 	)
 	if err != nil {
 		return nil, err
@@ -385,15 +385,15 @@ func NewUpdatable{{ $t.GoName }}Model(
 			db DB,
 			{{ .GoName }} {{ .Type }},
 		) (*{{ $t.GoName }}Model, error) {
-			query, err := dioq.Query(
-				dioq.SELECT(
+			query, err := sqli.Query(
+				sqli.SELECT(
 					{{ $t.GoName }}Table.AllColumns(),
 				),
-				dioq.FROM({{ $t.GoName }}Table),
-				dioq.WHERE(
-					dioq.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+				sqli.FROM({{ $t.GoName }}Table),
+				sqli.WHERE(
+					sqli.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 				),
-				dioq.LIMIT(1),
+				sqli.LIMIT(1),
 			)
 			if err != nil {
 				return nil, err
@@ -423,12 +423,12 @@ func NewUpdatable{{ $t.GoName }}Model(
 			db DB,
 			{{ .GoName }} {{ .Type }},
 		) (sql.Result, error) {
-			query, err := dioq.Query(
-				dioq.DELETE_FROM(
+			query, err := sqli.Query(
+				sqli.DELETE_FROM(
 					{{ $t.GoName }}Table,
 				),
-				dioq.WHERE(
-					dioq.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+				sqli.WHERE(
+					sqli.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
@@ -455,19 +455,19 @@ func NewUpdatable{{ $t.GoName }}Model(
 				{{ .GoName }} {{ .Type }},
 			{{- end -}}
 		) (*{{ $i.Table.GoName }}Model, error) {
-			query, err := dioq.Query(
-				dioq.SELECT(
+			query, err := sqli.Query(
+				sqli.SELECT(
 					{{ $i.Table.GoName }}Table.AllColumns(),
 				),
-				dioq.FROM({{ $i.Table.GoName }}Table),
-				dioq.WHERE(
-					dioq.AND(
+				sqli.FROM({{ $i.Table.GoName }}Table),
+				sqli.WHERE(
+					sqli.AND(
 						{{ range $i.Fields -}}
-							dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
-				dioq.LIMIT(1),
+				sqli.LIMIT(1),
 			)
 			if err != nil {
 				return nil, err
@@ -499,14 +499,14 @@ func NewUpdatable{{ $t.GoName }}Model(
 				{{ .GoName }} {{ .Type }},
 			{{- end -}}
 		) (sql.Result, error) {
-			query, err := dioq.Query(
-				dioq.DELETE_FROM(
+			query, err := sqli.Query(
+				sqli.DELETE_FROM(
 					{{ $i.Table.GoName }}Table,
 				),
-				dioq.WHERE(
-					dioq.AND(
+				sqli.WHERE(
+					sqli.AND(
 						{{ range $i.Fields -}}
-							dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
@@ -527,25 +527,25 @@ func NewUpdatable{{ $t.GoName }}Model(
 				{{ .GoName }} {{ .Type }},
 			{{- end -}}
 		) (sql.Result, error) {
-			valuesSetList := []dioq.Statement{}
+			valuesSetList := []sqli.Statement{}
 
 			{{ range $i.Table.Fields -}}
 				if updatableModel.{{ .GoName }} != nil {
-					valuesSetList = append(valuesSetList, dioq.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
+					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
 				}
 			{{ end }}
 
-			query, err := dioq.Query(
-				dioq.UPDATE(
+			query, err := sqli.Query(
+				sqli.UPDATE(
 					{{ $i.Table.GoName }}Table,
 				),
-				dioq.SET(
+				sqli.SET(
 					valuesSetList...,
 				),
-				dioq.WHERE(
-					dioq.AND(
+				sqli.WHERE(
+					sqli.AND(
 						{{ range $i.Fields -}}
-							dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
@@ -572,24 +572,24 @@ func NewUpdatable{{ $t.GoName }}Model(
 				return nil, errors.New("InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
 			}
 
-			valueSetList := make([]dioq.ValuesSetSt, len(modelsList))
+			valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
 
 			for i, model := range modelsList {
 				if model == nil {
 					return nil, errors.New("InsertableUserModel is nil")
 				}
 
-				valueSetList[i] = dioq.ValueSet(
+				valueSetList[i] = sqli.ValueSet(
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							dioq.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+							sqli.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
 						{{ end -}}
 					{{ end }}
 				)
 			}
 
-			query, err := dioq.Query(
-				dioq.INSERT_INTO(
+			query, err := sqli.Query(
+				sqli.INSERT_INTO(
 					{{ $i.Table.GoName }}Table,
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
@@ -597,10 +597,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 						{{ end -}}
 					{{ end }}
 				),
-				dioq.VALUES(
+				sqli.VALUES(
 					valueSetList...
 				),
-				dioq.RETURNING(
+				sqli.RETURNING(
 					{{- range $i.Fields }}
 						{{ $i.Table.GoName }}Table.{{ .GoName }},
 					{{- end }}
@@ -627,13 +627,13 @@ func NewUpdatable{{ $t.GoName }}Model(
 				db DB,
 				{{ .GoName }} {{ .Type }},
 			) ([]*{{ $i.Table.GoName }}Model, error) {
-				query, err := dioq.Query(
-					dioq.SELECT(
+				query, err := sqli.Query(
+					sqli.SELECT(
 						{{ $i.Table.GoName }}Table.AllColumns(),
 					),
-					dioq.FROM({{ $i.Table.GoName }}Table),
-					dioq.WHERE(
-						dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.FROM({{ $i.Table.GoName }}Table),
+					sqli.WHERE(
+						sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 					),
 				)
 				if err != nil {
@@ -669,15 +669,15 @@ func NewUpdatable{{ $t.GoName }}Model(
 				db DB,
 				{{ .GoName }} {{ .Type }},
 			) (*{{ $i.Table.GoName }}Model, error) {
-				query, err := dioq.Query(
-					dioq.SELECT(
+				query, err := sqli.Query(
+					sqli.SELECT(
 						{{ $i.Table.GoName }}Table.AllColumns(),
 					),
-					dioq.FROM({{ $i.Table.GoName }}Table),
-					dioq.WHERE(
-						dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.FROM({{ $i.Table.GoName }}Table),
+					sqli.WHERE(
+						sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 					),
-					dioq.LIMIT(1),
+					sqli.LIMIT(1),
 				)
 				if err != nil {
 					return nil, err
@@ -709,12 +709,12 @@ func NewUpdatable{{ $t.GoName }}Model(
 			db DB,
 			{{ .GoName }} {{ .Type }},
 		) (sql.Result, error) {
-			query, err := dioq.Query(
-				dioq.DELETE_FROM(
+			query, err := sqli.Query(
+				sqli.DELETE_FROM(
 					{{ $i.Table.GoName }}Table,
 				),
-				dioq.WHERE(
-					dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+				sqli.WHERE(
+					sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
@@ -733,24 +733,24 @@ func NewUpdatable{{ $t.GoName }}Model(
 				return nil, errors.New("InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
 			}
 
-			valueSetList := make([]dioq.ValuesSetSt, len(modelsList))
+			valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
 
 			for i, model := range modelsList {
 				if model == nil {
 					return nil, errors.New("InsertableUserModel is nil")
 				}
 
-				valueSetList[i] = dioq.ValueSet(
+				valueSetList[i] = sqli.ValueSet(
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							dioq.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+							sqli.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
 						{{ end -}}
 					{{ end }}
 				)
 			}
 
-			query, err := dioq.Query(
-				dioq.INSERT_INTO(
+			query, err := sqli.Query(
+				sqli.INSERT_INTO(
 					{{ $i.Table.GoName }}Table,
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
@@ -758,10 +758,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 						{{ end -}}
 					{{ end }}
 				),
-				dioq.VALUES(
+				sqli.VALUES(
 					valueSetList...
 				),
-				dioq.RETURNING(
+				sqli.RETURNING(
 					{{ $i.Table.GoName }}Table.{{ .GoName }},
 				),
 			)
@@ -787,23 +787,23 @@ func NewUpdatable{{ $t.GoName }}Model(
 			updatableModel *Updatable{{ $i.Table.GoName }}Model,
 			{{ .GoName }} {{ .Type }},
 		) (sql.Result, error) {
-			valuesSetList := []dioq.Statement{}
+			valuesSetList := []sqli.Statement{}
 
 			{{ range $i.Table.Fields -}}
 				if updatableModel.{{ .GoName }} != nil {
-					valuesSetList = append(valuesSetList, dioq.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
+					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
 				}
 			{{ end }}
 
-			query, err := dioq.Query(
-				dioq.UPDATE(
+			query, err := sqli.Query(
+				sqli.UPDATE(
 					{{ $i.Table.GoName }}Table,
 				),
-				dioq.SET(
+				sqli.SET(
 					valuesSetList...,
 				),
-				dioq.WHERE(
-					dioq.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+				sqli.WHERE(
+					sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
