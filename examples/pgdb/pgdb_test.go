@@ -1,10 +1,10 @@
-package sqli_test
+package pgdb_test
 
 import (
 	"testing"
 
 	. "github.com/Dionid/sqli"
-	. "github.com/Dionid/sqli/dbs/crmdb"
+	. "github.com/Dionid/sqli/examples/pgdb/db"
 	"github.com/google/uuid"
 )
 
@@ -16,7 +16,9 @@ func TestSimpleUpdate(t *testing.T) {
 		SET(
 			SET_VALUE(UserTable.Password, "test"),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(
+			EQUAL(UserTable.ID, id),
+		),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)

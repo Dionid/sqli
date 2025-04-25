@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  database:
+    container_name: 'database'
+    restart: always
+    image: 'postgres:12.9'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./init.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5441:5432
+    environment:
+      POSTGRES_HOST: sqli
+      POSTGRES_USER: sqli
+      POSTGRES_PASSWORD: sqli
+      POSTGRES_DB: sqli
+
+volumes:
+  db-data:

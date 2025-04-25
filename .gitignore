@@ -31,4 +31,5 @@ coverage
 
 *.env
 
-dbs
+.devbox
+examples/pgdb/pkg

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
+  "packages": [
+    "go@1.24.1",
+    "grc@1.13"
+  ],
+  "env": {
+    "GOPATH": "$PWD",
+    "PATH":   "$PATH:$PWD/bin"
+  },
+  "shell": {
+    "init_hook": [
+      "go install github.com/xo/xo@latest"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}
