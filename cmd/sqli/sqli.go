@@ -41,21 +41,26 @@ func main() {
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			xoArgs := make([]string, 0)
+
+			xoArgs = append(xoArgs, "--src", generateCmdConfig.Src)
+			xoArgs = append(xoArgs, "--schema", generateCmdConfig.Schema)
+			xoArgs = append(xoArgs, "--out", generateCmdConfig.Out)
+
+			xoArgs = append(xoArgs, "schema", args[0])
+
+			// fmt.Println("xoArgs: ", xoArgs)
+
+			println("Generating files...")
+
 			err := xo.Run(
 				context.Background(),
 				"xo",
 				"0.0.0-dev",
-				"--src",
-				generateCmdConfig.Src,
-				"--out",
-				generateCmdConfig.Out,
-				"--schema",
-				generateCmdConfig.Schema,
-				"schema",
-				args[0],
+				xoArgs...,
 			)
 			if err != nil {
-				fmt.Printf("Error running: %v\n", err)
+				fmt.Printf("Error generating: %v\n", err)
 				os.Exit(1)
 			}
 
@@ -74,7 +79,7 @@ func main() {
 		&generateCmdConfig.Out,
 		"out",
 		"o",
-		"./db",
+		"db",
 		"out path (default 'models')",
 	)
 
