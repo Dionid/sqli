@@ -49,8 +49,6 @@ func main() {
 
 			xoArgs = append(xoArgs, "schema", args[0])
 
-			// fmt.Println("xoArgs: ", xoArgs)
-
 			println("Generating files...")
 
 			err := xo.Run(
