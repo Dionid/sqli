@@ -40,25 +40,50 @@ func main() {
 			}
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			xoArgs := make([]string, 0)
+		Run: func(cmd *cobra.Command, cmdArgs []string) {
+			ctx := context.Background()
 
-			xoArgs = append(xoArgs, "--src", generateCmdConfig.Src)
-			xoArgs = append(xoArgs, "--schema", generateCmdConfig.Schema)
-			xoArgs = append(xoArgs, "--out", generateCmdConfig.Out)
+			xoCmdArgs := make([]string, 0)
 
-			xoArgs = append(xoArgs, "schema", args[0])
+			xoCmdArgs = append(xoCmdArgs, "--src", generateCmdConfig.Src)
+			xoCmdArgs = append(xoCmdArgs, "--schema", generateCmdConfig.Schema)
+			xoCmdArgs = append(xoCmdArgs, "--out", generateCmdConfig.Out)
+
+			xoCmdArgs = append(xoCmdArgs, "schema", cmdArgs[0])
 
 			println("Generating files...")
 
-			err := xo.Run(
-				context.Background(),
-				"xo",
-				"0.0.0-dev",
-				xoArgs...,
-			)
+			// err := xo.Run(
+			// 	ctx,
+			// 	"xo",
+			// 	"0.0.0-dev",
+			// 	xoArgs...,
+			// )
+			// if err != nil {
+			// 	fmt.Printf("Error generating: %v\n", err)
+			// 	os.Exit(1)
+			// }
+
+			ts, err := xo.NewTemplateSet(ctx, generateCmdConfig.Src, "")
 			if err != nil {
-				fmt.Printf("Error generating: %v\n", err)
+				fmt.Printf("Error creating template set: %v\n", err)
+				os.Exit(1)
+			}
+
+			// create args
+			tmpArgs := xo.NewArgs(ts.Target(), ts.Targets()...)
+
+			// create root command
+			xoCmd, err := xo.RootCommand(ctx, "xo", "0.0.0-dev", ts, tmpArgs, xoCmdArgs...)
+			if err != nil {
+				fmt.Printf("Error creating template set: %v\n", err)
+				os.Exit(1)
+			}
+
+			// execute
+			err = xoCmd.Execute()
+			if err != nil {
+				fmt.Printf("Error executing command: %v\n", err)
 				os.Exit(1)
 			}
 
