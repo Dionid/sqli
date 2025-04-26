@@ -9,7 +9,6 @@ import (
 
 	"github.com/Dionid/sqli"
 	"github.com/spf13/cobra"
-	xo "github.com/xo/xo/cmd"
 	"github.com/xo/xo/templates"
 
 	// drivers
@@ -73,34 +72,21 @@ func main() {
 
 			xoCmdArgs := make([]string, 0)
 
+			// # Flags
 			xoCmdArgs = append(xoCmdArgs, "--schema", generateCmdConfig.Schema)
 			xoCmdArgs = append(xoCmdArgs, "--out", generateCmdConfig.Out)
 
+			// # Args
 			xoCmdArgs = append(xoCmdArgs, "schema", cmdArgs[0])
 
 			println("Generating files...")
 
-			// # Create template set
-			ts, err := NewTemplateSet(ctx)
+			err := sqli.Generate(
+				ctx,
+				xoCmdArgs,
+			)
 			if err != nil {
-				fmt.Printf("Error creating template set: %v\n", err)
-				os.Exit(1)
-			}
-
-			// # Create args
-			tmpArgs := xo.NewArgs(ts.Target(), ts.Targets()...)
-
-			// # Create root xo command
-			xoCmd, err := xo.RootCommand(ctx, "xo", "0.0.0-dev", ts, tmpArgs, xoCmdArgs...)
-			if err != nil {
-				fmt.Printf("Error generating root command: %v\n", err)
-				os.Exit(1)
-			}
-
-			// # Execute
-			err = xoCmd.Execute()
-			if err != nil {
-				fmt.Printf("Error executing command: %v\n", err)
+				fmt.Printf("Error generating: %v\n", err)
 				os.Exit(1)
 			}
 
