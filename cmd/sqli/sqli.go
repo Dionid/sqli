@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 
+	"github.com/Dionid/sqli"
 	"github.com/spf13/cobra"
 	xo "github.com/xo/xo/cmd"
+	"github.com/xo/xo/templates"
 
 	// drivers
 	_ "github.com/go-sql-driver/mysql"
@@ -16,6 +19,32 @@ import (
 	_ "github.com/microsoft/go-mssqldb"
 	_ "github.com/sijms/go-ora/v2"
 )
+
+// NewTemplateSet creates a new templates set.
+func NewTemplateSet(ctx context.Context) (*templates.Set, error) {
+	var err error
+
+	// build template ts
+	ts := templates.NewDefaultTemplateSet(ctx)
+
+	// load specified template
+	target := "templates"
+
+	sub, err := fs.Sub(sqli.XoTemplates, target)
+	if err != nil {
+		return nil, err
+	}
+
+	// add template
+	if target, err = ts.Add(ctx, target, sub, true); err != nil {
+		return nil, err
+	}
+
+	// use
+	ts.Use(target)
+
+	return ts, nil
+}
 
 type GenerateCmdConfig struct {
 	Src    string
@@ -53,34 +82,24 @@ func main() {
 
 			println("Generating files...")
 
-			// err := xo.Run(
-			// 	ctx,
-			// 	"xo",
-			// 	"0.0.0-dev",
-			// 	xoArgs...,
-			// )
-			// if err != nil {
-			// 	fmt.Printf("Error generating: %v\n", err)
-			// 	os.Exit(1)
-			// }
-
-			ts, err := xo.NewTemplateSet(ctx, generateCmdConfig.Src, "")
+			// # Create template set
+			ts, err := NewTemplateSet(ctx)
 			if err != nil {
 				fmt.Printf("Error creating template set: %v\n", err)
 				os.Exit(1)
 			}
 
-			// create args
+			// # Create args
 			tmpArgs := xo.NewArgs(ts.Target(), ts.Targets()...)
 
-			// create root command
+			// # Create root xo command
 			xoCmd, err := xo.RootCommand(ctx, "xo", "0.0.0-dev", ts, tmpArgs, xoCmdArgs...)
 			if err != nil {
-				fmt.Printf("Error creating template set: %v\n", err)
+				fmt.Printf("Error generating root command: %v\n", err)
 				os.Exit(1)
 			}
 
-			// execute
+			// # Execute
 			err = xoCmd.Execute()
 			if err != nil {
 				fmt.Printf("Error executing command: %v\n", err)

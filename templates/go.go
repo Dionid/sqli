@@ -1,6 +1,6 @@
 //go:build xotpl
 
-package gotpl
+package templates
 
 import (
 	"bytes"
