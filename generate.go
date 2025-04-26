@@ -33,10 +33,26 @@ func NewTemplateSet(ctx context.Context) (*templates.Set, error) {
 	return ts, nil
 }
 
+type GenerateCmdOpts struct {
+	Out      string
+	DbSchema string
+
+	DbUrl string
+}
+
 func Generate(
 	ctx context.Context,
-	xoCmdArgs []string,
+	opts GenerateCmdOpts,
 ) error {
+	xoCmdArgs := make([]string, 0)
+
+	// # Flags
+	xoCmdArgs = append(xoCmdArgs, "--schema", opts.DbSchema)
+	xoCmdArgs = append(xoCmdArgs, "--out", opts.Out)
+
+	// # Args
+	xoCmdArgs = append(xoCmdArgs, "schema", opts.DbUrl)
+
 	// # Create template set
 	ts, err := NewTemplateSet(ctx)
 	if err != nil {

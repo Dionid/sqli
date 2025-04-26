@@ -70,20 +70,16 @@ func main() {
 		Run: func(cmd *cobra.Command, cmdArgs []string) {
 			ctx := context.Background()
 
-			xoCmdArgs := make([]string, 0)
-
-			// # Flags
-			xoCmdArgs = append(xoCmdArgs, "--schema", generateCmdConfig.Schema)
-			xoCmdArgs = append(xoCmdArgs, "--out", generateCmdConfig.Out)
-
-			// # Args
-			xoCmdArgs = append(xoCmdArgs, "schema", cmdArgs[0])
-
 			println("Generating files...")
 
 			err := sqli.Generate(
 				ctx,
-				xoCmdArgs,
+				sqli.GenerateCmdOpts{
+					DbSchema: generateCmdConfig.Schema,
+					Out:      generateCmdConfig.Out,
+
+					DbUrl: cmdArgs[0],
+				},
 			)
 			if err != nil {
 				fmt.Printf("Error generating: %v\n", err)
