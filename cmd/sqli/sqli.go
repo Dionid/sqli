@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -16,55 +17,74 @@ import (
 	_ "github.com/sijms/go-ora/v2"
 )
 
+type GenerateCmdConfig struct {
+	Src    string
+	Out    string
+	Schema string
+}
+
 func main() {
 	rootCmd := &cobra.Command{
 		Use:   "sqli",
 		Short: "SQLification CLI tool",
 	}
 
+	generateCmdConfig := &GenerateCmdConfig{}
+
 	generateCmd := &cobra.Command{
-		Use:   "generate",
-		Short: "Generate files using xo",
-		Run: func(cmd *cobra.Command, args []string) {
-			defaultSrc := "../../xo"
-			defaultOut := "./db"
-			defaultSchema := "public"
-
+		Use:   "generate <database url>",
+		Short: "Generate SQLi Query Builder based on the database schema",
+		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				fmt.Println("Please provide a database URL")
-				return
+				return errors.New("Please provide a database URL")
 			}
-
+			return nil
+		},
+		Run: func(cmd *cobra.Command, args []string) {
 			err := xo.Run(
 				context.Background(),
 				"xo",
 				"0.0.0-dev",
 				"--src",
-				defaultSrc,
+				generateCmdConfig.Src,
 				"--out",
-				defaultOut,
+				generateCmdConfig.Out,
 				"--schema",
-				defaultSchema,
+				generateCmdConfig.Schema,
 				"schema",
 				args[0],
 			)
 			if err != nil {
-				fmt.Printf("Error running xo: %v\n", err)
+				fmt.Printf("Error running: %v\n", err)
 				os.Exit(1)
 			}
 
-			fmt.Println("Files generated successfully into " + defaultOut)
-
-			// xoCmd := exec.Command("xo --src ../../xo --out ./db --schema public schema ${DB_PG}")
-			// xoCmd.Stdout = os.Stdout
-			// xoCmd.Stderr = os.Stderr
-
-			// if err := xoCmd.Run(); err != nil {
-			// 	fmt.Printf("Error executing xo command: %v\n", err)
-			// 	os.Exit(1)
-			// }
+			fmt.Println("Files generated successfully into " + generateCmdConfig.Out)
 		},
 	}
+
+	generateCmd.Flags().StringVar(
+		&generateCmdConfig.Src,
+		"src",
+		"../../xo",
+		"directory with templates",
+	)
+
+	generateCmd.Flags().StringVarP(
+		&generateCmdConfig.Out,
+		"out",
+		"o",
+		"./db",
+		"out path (default 'models')",
+	)
+
+	generateCmd.Flags().StringVarP(
+		&generateCmdConfig.Schema,
+		"schema",
+		"c",
+		"public",
+		"database schema name",
+	)
 
 	rootCmd.AddCommand(generateCmd)
 
