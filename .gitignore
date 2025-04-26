@@ -31,5 +31,5 @@ coverage
 
 *.env
 
-.devbox
-examples/pgdb/pkg
+# Added by goreleaser init:
+dist/
