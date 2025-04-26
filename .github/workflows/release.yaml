@@ -1,6 +1,9 @@
 # .github/workflows/release.yaml
 
 on:
+  push:
+    tags:
+      - 'v*'
   release:
     types: [created]
 
