@@ -8,10 +8,10 @@ Type-safe generative SQL Query Builder based on you DB schema.
 
 newUserId := uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")
 
-id, err := InsertIntoUserTableReturningID(
+id, err := InsertIntoUserTableReturningID( // This is a generated function
     ctx,
     db,
-    yourdb.InsertableUserModel{
+    yourdb.InsertableUserModel{ 
         ID: newUserId,
         Name: "User 1",
     },
@@ -19,7 +19,7 @@ id, err := InsertIntoUserTableReturningID(
 
 println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
-// and you can also use Dynamic Queries
+// ... and you can also use Dynamic Queries
 
 insertQuery, err := sqli.Query(
     sqli.INSERT_INTO(yourdb.UserTable),
