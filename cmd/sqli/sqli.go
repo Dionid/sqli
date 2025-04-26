@@ -47,7 +47,6 @@ func NewTemplateSet(ctx context.Context) (*templates.Set, error) {
 }
 
 type GenerateCmdConfig struct {
-	Src    string
 	Out    string
 	Schema string
 }
@@ -55,7 +54,7 @@ type GenerateCmdConfig struct {
 func main() {
 	rootCmd := &cobra.Command{
 		Use:   "sqli",
-		Short: "SQLification CLI tool",
+		Short: "SQLi CLI tool",
 	}
 
 	generateCmdConfig := &GenerateCmdConfig{}
@@ -74,7 +73,6 @@ func main() {
 
 			xoCmdArgs := make([]string, 0)
 
-			xoCmdArgs = append(xoCmdArgs, "--src", generateCmdConfig.Src)
 			xoCmdArgs = append(xoCmdArgs, "--schema", generateCmdConfig.Schema)
 			xoCmdArgs = append(xoCmdArgs, "--out", generateCmdConfig.Out)
 
@@ -109,13 +107,6 @@ func main() {
 			fmt.Println("Files generated successfully into " + generateCmdConfig.Out)
 		},
 	}
-
-	generateCmd.Flags().StringVar(
-		&generateCmdConfig.Src,
-		"src",
-		"../../xo",
-		"directory with templates",
-	)
 
 	generateCmd.Flags().StringVarP(
 		&generateCmdConfig.Out,
