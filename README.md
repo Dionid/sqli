@@ -239,6 +239,8 @@ For more examples, see the [examples](./examples) folder.
 
 # TODO
 
+1. Release
+1. README
 1. pgx types
 1. Upsert
 1. SUM

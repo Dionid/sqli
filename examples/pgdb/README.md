@@ -1,12 +1,14 @@
 # SQLi PG example
 
+To run just:
+
 ```
-make install
 make test
 ```
 
 ## Prerequisites
 
+1. (sqli)[https://github.com/Dionid/sqli]
 1. Go
 1. Docker
 1. (grc)[https://github.com/garabik/grc]

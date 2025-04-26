@@ -6,7 +6,7 @@ DB_PG="postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${P
 # SQLi
 
 sqli:
-	xo --src ../../xo --out ./db --schema public schema ${DB_PG}
+	sqli generate ${DB_PG}
 
 # CRM DB
 
