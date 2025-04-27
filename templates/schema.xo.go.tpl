@@ -151,14 +151,14 @@ func (err ErrInvalid{{ $e.GoName }}) Error() string {
 {{ define "typedef" }}
 {{- $t := .Data -}}
 
-type {{ $t.GoName }}TableSt struct {
+type {{ $t.GoName }}Table struct {
 	sqli.Table
 	{{ range $t.Fields -}}
 		{{ .GoName }} sqli.Column[{{ .Type }}]
 	{{ end }}
 }
 
-func (t {{ $t.GoName }}TableSt) As(alias string) {{ $t.GoName }}TableSt {
+func (t {{ $t.GoName }}Table) As(alias string) {{ $t.GoName }}Table {
 	t.Table.TableAlias = fmt.Sprintf(`"%s"`, alias)
 	{{ range $t.Fields -}}
 		t.{{ .GoName }} = sqli.NewColumnWithAlias[{{ .Type }}](t.Table, t.{{ .GoName }}.ColumnName, t.{{ .GoName }}.ColumnAlias)
@@ -167,28 +167,28 @@ func (t {{ $t.GoName }}TableSt) As(alias string) {{ $t.GoName }}TableSt {
 	return t
 }
 
-var {{ $t.GoName }}TableBase = sqli.Table{
+var {{ $t.GoName }}TableMeta = sqli.Table{
 	TableName: `"{{ $t.SQLName }}"`,
 	TableAlias: `"{{ $t.SQLName }}"`,
 }
 
-var {{ $t.GoName }}Table = {{ $t.GoName }}TableSt{
-	Table: {{ $t.GoName }}TableBase,
+var {{ $t.GoName }} = {{ $t.GoName }}Table{
+	Table: {{ $t.GoName }}TableMeta,
 {{ range $t.Fields -}}
-	{{ .GoName }}: sqli.NewColumn[{{ .Type }}]({{ $t.GoName }}TableBase, `"{{ .SQLName }}"`),
+	{{ .GoName }}: sqli.NewColumn[{{ .Type }}]({{ $t.GoName }}TableMeta, `"{{ .SQLName }}"`),
 {{ end }}
 }
 
 // # Constants
 
-// # Columns Types (CT)
+// # Columns Types
 {{ range $t.Fields -}}
-type {{ $t.GoName }}{{ .GoName }}CT = {{ .Type }}
+type {{ $t.GoName }}{{ .GoName }}T = {{ .Type }}
 {{ end }}
 
-// # Columns Names (CN)
+// # Columns Names
 {{ range $t.Fields -}}
-const {{ $t.GoName }}{{ .GoName }}CN = `"{{ .SQLName }}"`
+const {{ $t.GoName }}{{ .GoName }} = `"{{ .SQLName }}"`
 {{ end }}
 
 // # Model
@@ -268,7 +268,7 @@ func InsertInto{{ $t.GoName }}Table(
 		valueSetList[i] = sqli.ValueSet(
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
-					sqli.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+					sqli.VALUE({{ $t.GoName }}.{{ .GoName }}, model.{{ .GoName }}),
 				{{ end -}}
 			{{ end }}
 		)
@@ -276,10 +276,10 @@ func InsertInto{{ $t.GoName }}Table(
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			{{ $t.GoName }}Table,
+			{{ $t.GoName }},
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
-					{{ $t.GoName }}Table.{{ .GoName }},
+					{{ $t.GoName }}.{{ .GoName }},
 				{{ end -}}
 			{{ end }}
 		),
@@ -316,7 +316,7 @@ func InsertInto{{ $t.GoName }}TableReturningAll(
 					{{- if eq .Type "[]uuid.UUID" }}
 						pq.Array(model.{{ .GoName }}),
 					{{ else }}
-						sqli.VALUE({{ $t.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+						sqli.VALUE({{ $t.GoName }}.{{ .GoName }}, model.{{ .GoName }}),
 					{{- end -}}
 				{{ end -}}
 			{{ end }}
@@ -325,17 +325,17 @@ func InsertInto{{ $t.GoName }}TableReturningAll(
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			{{ $t.GoName }}Table,
+			{{ $t.GoName }},
 			{{ range $t.Fields }}
 				{{- if not .IsSequence -}}
-					{{ $t.GoName }}Table.{{ .GoName }},
+					{{ $t.GoName }}.{{ .GoName }},
 				{{ end -}}
 			{{ end }}
 		),
 		sqli.VALUES(
 			valueSetList...
 		),
-		sqli.RETURNING({{ $t.GoName }}Table.AllColumns()),
+		sqli.RETURNING({{ $t.GoName }}.AllColumns()),
 	)
 	if err != nil {
 		return nil, err
@@ -389,11 +389,11 @@ func NewUpdatable{{ $t.GoName }}Model(
 		) (*{{ $t.GoName }}Model, error) {
 			query, err := sqli.Query(
 				sqli.SELECT(
-					{{ $t.GoName }}Table.AllColumns(),
+					{{ $t.GoName }}.AllColumns(),
 				),
-				sqli.FROM({{ $t.GoName }}Table),
+				sqli.FROM({{ $t.GoName }}),
 				sqli.WHERE(
-					sqli.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.EQUAL({{ $t.GoName }}.{{ .GoName }}, {{ .GoName }}),
 				),
 				sqli.LIMIT(1),
 			)
@@ -427,10 +427,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 		) (sql.Result, error) {
 			query, err := sqli.Query(
 				sqli.DELETE_FROM(
-					{{ $t.GoName }}Table,
+					{{ $t.GoName }},
 				),
 				sqli.WHERE(
-					sqli.EQUAL({{ $t.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.EQUAL({{ $t.GoName }}.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
@@ -459,13 +459,13 @@ func NewUpdatable{{ $t.GoName }}Model(
 		) (*{{ $i.Table.GoName }}Model, error) {
 			query, err := sqli.Query(
 				sqli.SELECT(
-					{{ $i.Table.GoName }}Table.AllColumns(),
+					{{ $i.Table.GoName }}.AllColumns(),
 				),
-				sqli.FROM({{ $i.Table.GoName }}Table),
+				sqli.FROM({{ $i.Table.GoName }}),
 				sqli.WHERE(
 					sqli.AND(
 						{{ range $i.Fields -}}
-							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
@@ -503,12 +503,12 @@ func NewUpdatable{{ $t.GoName }}Model(
 		) (sql.Result, error) {
 			query, err := sqli.Query(
 				sqli.DELETE_FROM(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 				),
 				sqli.WHERE(
 					sqli.AND(
 						{{ range $i.Fields -}}
-							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
@@ -533,13 +533,13 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 			{{ range $i.Table.Fields -}}
 				if updatableModel.{{ .GoName }} != nil {
-					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
+					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}.{{ .GoName }}, *updatableModel.{{ .GoName }}))
 				}
 			{{ end }}
 
 			query, err := sqli.Query(
 				sqli.UPDATE(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 				),
 				sqli.SET(
 					valuesSetList...,
@@ -547,7 +547,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 				sqli.WHERE(
 					sqli.AND(
 						{{ range $i.Fields -}}
-							sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+							sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 						{{ end }}
 					),
 				),
@@ -584,7 +584,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 				valueSetList[i] = sqli.ValueSet(
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							sqli.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+							sqli.VALUE({{ $i.Table.GoName }}.{{ .GoName }}, model.{{ .GoName }}),
 						{{ end -}}
 					{{ end }}
 				)
@@ -592,10 +592,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 			query, err := sqli.Query(
 				sqli.INSERT_INTO(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							{{ $i.Table.GoName }}Table.{{ .GoName }},
+							{{ $i.Table.GoName }}.{{ .GoName }},
 						{{ end -}}
 					{{ end }}
 				),
@@ -604,7 +604,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 				),
 				sqli.RETURNING(
 					{{- range $i.Fields }}
-						{{ $i.Table.GoName }}Table.{{ .GoName }},
+						{{ $i.Table.GoName }}.{{ .GoName }},
 					{{- end }}
 				),
 			)
@@ -631,11 +631,11 @@ func NewUpdatable{{ $t.GoName }}Model(
 			) ([]*{{ $i.Table.GoName }}Model, error) {
 				query, err := sqli.Query(
 					sqli.SELECT(
-						{{ $i.Table.GoName }}Table.AllColumns(),
+						{{ $i.Table.GoName }}.AllColumns(),
 					),
-					sqli.FROM({{ $i.Table.GoName }}Table),
+					sqli.FROM({{ $i.Table.GoName }}),
 					sqli.WHERE(
-						sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+						sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 					),
 				)
 				if err != nil {
@@ -673,11 +673,11 @@ func NewUpdatable{{ $t.GoName }}Model(
 			) (*{{ $i.Table.GoName }}Model, error) {
 				query, err := sqli.Query(
 					sqli.SELECT(
-						{{ $i.Table.GoName }}Table.AllColumns(),
+						{{ $i.Table.GoName }}.AllColumns(),
 					),
-					sqli.FROM({{ $i.Table.GoName }}Table),
+					sqli.FROM({{ $i.Table.GoName }}),
 					sqli.WHERE(
-						sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+						sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 					),
 					sqli.LIMIT(1),
 				)
@@ -713,10 +713,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 		) (sql.Result, error) {
 			query, err := sqli.Query(
 				sqli.DELETE_FROM(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 				),
 				sqli.WHERE(
-					sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
@@ -745,7 +745,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 				valueSetList[i] = sqli.ValueSet(
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							sqli.VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, model.{{ .GoName }}),
+							sqli.VALUE({{ $i.Table.GoName }}.{{ .GoName }}, model.{{ .GoName }}),
 						{{ end -}}
 					{{ end }}
 				)
@@ -753,10 +753,10 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 			query, err := sqli.Query(
 				sqli.INSERT_INTO(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 					{{ range $i.Table.Fields }}
 						{{- if not .IsSequence -}}
-							{{ $i.Table.GoName }}Table.{{ .GoName }},
+							{{ $i.Table.GoName }}.{{ .GoName }},
 						{{ end -}}
 					{{ end }}
 				),
@@ -764,7 +764,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 					valueSetList...
 				),
 				sqli.RETURNING(
-					{{ $i.Table.GoName }}Table.{{ .GoName }},
+					{{ $i.Table.GoName }}.{{ .GoName }},
 				),
 			)
 			if err != nil {
@@ -793,19 +793,19 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 			{{ range $i.Table.Fields -}}
 				if updatableModel.{{ .GoName }} != nil {
-					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}Table.{{ .GoName }}, *updatableModel.{{ .GoName }}))
+					valuesSetList = append(valuesSetList, sqli.SET_VALUE({{ $i.Table.GoName }}.{{ .GoName }}, *updatableModel.{{ .GoName }}))
 				}
 			{{ end }}
 
 			query, err := sqli.Query(
 				sqli.UPDATE(
-					{{ $i.Table.GoName }}Table,
+					{{ $i.Table.GoName }},
 				),
 				sqli.SET(
 					valuesSetList...,
 				),
 				sqli.WHERE(
-					sqli.EQUAL({{ $i.Table.GoName }}Table.{{ .GoName }}, {{ .GoName }}),
+					sqli.EQUAL({{ $i.Table.GoName }}.{{ .GoName }}, {{ .GoName }}),
 				),
 			)
 			if err != nil {
