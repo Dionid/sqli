@@ -1,7 +1,9 @@
-{{ define "db" -}}
-
-// {{- printf "Template Data:\n" -}}
+{{ define "debug" -}}
+// {{- printf "Template params:\n" -}}
 // {{ printf "%#v\n\n" . -}}
+{{ end -}}
+
+{{ define "db" -}}
 
 var (
 	// logf is used by generated code to log SQL queries.

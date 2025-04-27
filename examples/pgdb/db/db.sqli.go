@@ -12,9 +12,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Template Data:
-// types.Template{Src:"", Partial:"db", Dest:"db.xo.go", SortType:"", SortName:"", Data:interface {}(nil)}
-
 var (
 	// logf is used by generated code to log SQL queries.
 	logf = func(string, ...interface{}) {}

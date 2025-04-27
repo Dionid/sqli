@@ -251,11 +251,11 @@ func Init(ctx context.Context, f func(xo.TemplateType)) error {
 			if !NotFirst(ctx) && !Append(ctx) {
 				emit(xo.Template{
 					Partial: "db",
-					Dest:    "db.xo.go",
+					Dest:    "db.sqli.go",
 				})
-				// If --single is provided, don't generate header for db.xo.go.
+				// If --single is provided, don't generate header for db.sqli.go.
 				if xo.Single(ctx) == "" {
-					files["db.xo.go"] = true
+					files["db.sqli.go"] = true
 				}
 			}
 			if Append(ctx) {
@@ -831,7 +831,7 @@ func camelExport(names ...string) string {
 	return snaker.ForceCamelIdentifier(strings.Join(names, "_"))
 }
 
-const ext = ".xo.go"
+const ext = ".sqli.go"
 
 // Funcs is a set of template funcs.
 type Funcs struct {

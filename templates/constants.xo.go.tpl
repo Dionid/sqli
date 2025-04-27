@@ -1,10 +1,12 @@
+{{ define "debug" -}}
+// {{- printf "Template params:\n" -}}
+// {{ printf "%#v\n\n" . -}}
+{{ end -}}
+
 {{ define "constants" -}}
 package {{ pkg }}
 
-// {{- printf "Template Data:\n" -}}
-// {{ printf "%#v\n\n" . -}}
-
-{{- $t := .Data -}}
+{{ $t := .Data }}
 
 type TablesSt struct {
     {{ range $t -}}

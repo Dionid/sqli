@@ -73,6 +73,10 @@ SQLi generates:
 1. Predefined Queries
 3. Dynamic Queries
 
+## Constants
+
+All tables as types and names can be found in `constants.sqli.go`
+
 ## Predefined Queries
 
 ```go
