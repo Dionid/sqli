@@ -46,6 +46,25 @@ println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
 ```
 
+# Install
+
+1. By go install
+
+```shell
+go install github.com/Dionid/sqli/cmd/sqli@latest
+```
+
+2. Download from [Release](https://github.com/Dionid/sqli/releases)
+
+3. From sources
+
+```shell
+git clone git@github.com:Dionid/sqli.git
+cd sqli
+make build
+# you will find executables in ./dist folder
+```
+
 # Features
 
 SQLi generates:
