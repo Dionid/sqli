@@ -45,6 +45,7 @@ var GooseDbVersionTable = GooseDbVersionTableSt{
 
 // # Constants
 
+// # Columns Types (CT)
 type (
 	GooseDbVersionIDCT        = int
 	GooseDbVersionVersionIDCT = int64
@@ -52,6 +53,7 @@ type (
 	GooseDbVersionTstampCT    = time.Time
 )
 
+// # Columns Names (CN)
 const (
 	GooseDbVersionIDCN        = `"id"`
 	GooseDbVersionVersionIDCN = `"version_id"`

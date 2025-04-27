@@ -55,6 +55,7 @@ var UserTable = UserTableSt{
 
 // # Constants
 
+// # Columns Types (CT)
 type (
 	UserIDCT        = uuid.UUID
 	UserNameCT      = string
@@ -65,6 +66,7 @@ type (
 	UserRoleCT      = string
 )
 
+// # Columns Names (CN)
 const (
 	UserIDCN        = `"id"`
 	UserNameCN      = `"name"`

@@ -181,10 +181,12 @@ var {{ $t.GoName }}Table = {{ $t.GoName }}TableSt{
 
 // # Constants
 
+// # Columns Types (CT)
 {{ range $t.Fields -}}
 type {{ $t.GoName }}{{ .GoName }}CT = {{ .Type }}
 {{ end }}
 
+// # Columns Names (CN)
 {{ range $t.Fields -}}
 const {{ $t.GoName }}{{ .GoName }}CN = `"{{ .SQLName }}"`
 {{ end }}

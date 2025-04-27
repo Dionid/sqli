@@ -46,6 +46,7 @@ var OfficeTable = OfficeTableSt{
 
 // # Constants
 
+// # Columns Types (CT)
 type (
 	OfficeIDCT        = uuid.UUID
 	OfficeNameCT      = string
@@ -53,6 +54,7 @@ type (
 	OfficeUpdatedAtCT = sql.NullTime
 )
 
+// # Columns Names (CN)
 const (
 	OfficeIDCN        = `"id"`
 	OfficeNameCN      = `"name"`
