@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserTableSt struct {
+type UserTable struct {
 	sqli.Table
 	ID        sqli.Column[uuid.UUID]
 	Name      sqli.Column[string]
@@ -24,7 +24,7 @@ type UserTableSt struct {
 	Role      sqli.Column[string]
 }
 
-func (t UserTableSt) As(alias string) UserTableSt {
+func (t UserTable) As(alias string) UserTable {
 	t.Table.TableAlias = fmt.Sprintf(`"%s"`, alias)
 	t.ID = sqli.NewColumnWithAlias[uuid.UUID](t.Table, t.ID.ColumnName, t.ID.ColumnAlias)
 	t.Name = sqli.NewColumnWithAlias[string](t.Table, t.Name.ColumnName, t.Name.ColumnAlias)
@@ -37,42 +37,44 @@ func (t UserTableSt) As(alias string) UserTableSt {
 	return t
 }
 
-var UserTableBase = sqli.Table{
+var UserTableMeta = sqli.Table{
 	TableName:  `"user"`,
 	TableAlias: `"user"`,
 }
 
-var UserTable = UserTableSt{
-	Table:     UserTableBase,
-	ID:        sqli.NewColumn[uuid.UUID](UserTableBase, `"id"`),
-	Name:      sqli.NewColumn[string](UserTableBase, `"name"`),
-	Email:     sqli.NewColumn[string](UserTableBase, `"email"`),
-	Password:  sqli.NewColumn[string](UserTableBase, `"password"`),
-	CreatedAt: sqli.NewColumn[time.Time](UserTableBase, `"created_at"`),
-	UpdatedAt: sqli.NewColumn[sql.NullTime](UserTableBase, `"updated_at"`),
-	Role:      sqli.NewColumn[string](UserTableBase, `"role"`),
+var User = UserTable{
+	Table:     UserTableMeta,
+	ID:        sqli.NewColumn[uuid.UUID](UserTableMeta, `"id"`),
+	Name:      sqli.NewColumn[string](UserTableMeta, `"name"`),
+	Email:     sqli.NewColumn[string](UserTableMeta, `"email"`),
+	Password:  sqli.NewColumn[string](UserTableMeta, `"password"`),
+	CreatedAt: sqli.NewColumn[time.Time](UserTableMeta, `"created_at"`),
+	UpdatedAt: sqli.NewColumn[sql.NullTime](UserTableMeta, `"updated_at"`),
+	Role:      sqli.NewColumn[string](UserTableMeta, `"role"`),
 }
 
 // # Constants
 
+// # Columns Types
 type (
-	UserIDCT        = uuid.UUID
-	UserNameCT      = string
-	UserEmailCT     = string
-	UserPasswordCT  = string
-	UserCreatedAtCT = time.Time
-	UserUpdatedAtCT = sql.NullTime
-	UserRoleCT      = string
+	UserIDT        = uuid.UUID
+	UserNameT      = string
+	UserEmailT     = string
+	UserPasswordT  = string
+	UserCreatedAtT = time.Time
+	UserUpdatedAtT = sql.NullTime
+	UserRoleT      = string
 )
 
+// # Columns Names
 const (
-	UserIDCN        = `"id"`
-	UserNameCN      = `"name"`
-	UserEmailCN     = `"email"`
-	UserPasswordCN  = `"password"`
-	UserCreatedAtCN = `"created_at"`
-	UserUpdatedAtCN = `"updated_at"`
-	UserRoleCN      = `"role"`
+	UserID        = `"id"`
+	UserName      = `"name"`
+	UserEmail     = `"email"`
+	UserPassword  = `"password"`
+	UserCreatedAt = `"created_at"`
+	UserUpdatedAt = `"updated_at"`
+	UserRole      = `"role"`
 )
 
 // # Model
@@ -156,26 +158,26 @@ func InsertIntoUserTable(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(UserTable.ID, model.ID),
-			sqli.VALUE(UserTable.Name, model.Name),
-			sqli.VALUE(UserTable.Email, model.Email),
-			sqli.VALUE(UserTable.Password, model.Password),
-			sqli.VALUE(UserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(UserTable.UpdatedAt, model.UpdatedAt),
-			sqli.VALUE(UserTable.Role, model.Role),
+			sqli.VALUE(User.ID, model.ID),
+			sqli.VALUE(User.Name, model.Name),
+			sqli.VALUE(User.Email, model.Email),
+			sqli.VALUE(User.Password, model.Password),
+			sqli.VALUE(User.CreatedAt, model.CreatedAt),
+			sqli.VALUE(User.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(User.Role, model.Role),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			UserTable,
-			UserTable.ID,
-			UserTable.Name,
-			UserTable.Email,
-			UserTable.Password,
-			UserTable.CreatedAt,
-			UserTable.UpdatedAt,
-			UserTable.Role,
+			User,
+			User.ID,
+			User.Name,
+			User.Email,
+			User.Password,
+			User.CreatedAt,
+			User.UpdatedAt,
+			User.Role,
 		),
 		sqli.VALUES(
 			valueSetList...,
@@ -205,31 +207,31 @@ func InsertIntoUserTableReturningAll(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(UserTable.ID, model.ID),
-			sqli.VALUE(UserTable.Name, model.Name),
-			sqli.VALUE(UserTable.Email, model.Email),
-			sqli.VALUE(UserTable.Password, model.Password),
-			sqli.VALUE(UserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(UserTable.UpdatedAt, model.UpdatedAt),
-			sqli.VALUE(UserTable.Role, model.Role),
+			sqli.VALUE(User.ID, model.ID),
+			sqli.VALUE(User.Name, model.Name),
+			sqli.VALUE(User.Email, model.Email),
+			sqli.VALUE(User.Password, model.Password),
+			sqli.VALUE(User.CreatedAt, model.CreatedAt),
+			sqli.VALUE(User.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(User.Role, model.Role),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			UserTable,
-			UserTable.ID,
-			UserTable.Name,
-			UserTable.Email,
-			UserTable.Password,
-			UserTable.CreatedAt,
-			UserTable.UpdatedAt,
-			UserTable.Role,
+			User,
+			User.ID,
+			User.Name,
+			User.Email,
+			User.Password,
+			User.CreatedAt,
+			User.UpdatedAt,
+			User.Role,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
-		sqli.RETURNING(UserTable.AllColumns()),
+		sqli.RETURNING(User.AllColumns()),
 	)
 	if err != nil {
 		return nil, err
@@ -293,11 +295,11 @@ func SelectUserTableByEmail(
 ) (*UserModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		sqli.FROM(UserTable),
+		sqli.FROM(User),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.Email, Email),
+			sqli.EQUAL(User.Email, Email),
 		),
 		sqli.LIMIT(1),
 	)
@@ -331,10 +333,10 @@ func DeleteFromUserTableByEmail(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			UserTable,
+			User,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.Email, Email),
+			sqli.EQUAL(User.Email, Email),
 		),
 	)
 	if err != nil {
@@ -361,32 +363,32 @@ func InsertIntoUserTableReturningEmail(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(UserTable.ID, model.ID),
-			sqli.VALUE(UserTable.Name, model.Name),
-			sqli.VALUE(UserTable.Email, model.Email),
-			sqli.VALUE(UserTable.Password, model.Password),
-			sqli.VALUE(UserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(UserTable.UpdatedAt, model.UpdatedAt),
-			sqli.VALUE(UserTable.Role, model.Role),
+			sqli.VALUE(User.ID, model.ID),
+			sqli.VALUE(User.Name, model.Name),
+			sqli.VALUE(User.Email, model.Email),
+			sqli.VALUE(User.Password, model.Password),
+			sqli.VALUE(User.CreatedAt, model.CreatedAt),
+			sqli.VALUE(User.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(User.Role, model.Role),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			UserTable,
-			UserTable.ID,
-			UserTable.Name,
-			UserTable.Email,
-			UserTable.Password,
-			UserTable.CreatedAt,
-			UserTable.UpdatedAt,
-			UserTable.Role,
+			User,
+			User.ID,
+			User.Name,
+			User.Email,
+			User.Password,
+			User.CreatedAt,
+			User.UpdatedAt,
+			User.Role,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			UserTable.Email,
+			User.Email,
 		),
 	)
 	if err != nil {
@@ -414,36 +416,36 @@ func UpdateUserTableByEmail(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.ID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.ID, *updatableModel.ID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.ID, *updatableModel.ID))
 	}
 	if updatableModel.Name != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Name, *updatableModel.Name))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Name, *updatableModel.Name))
 	}
 	if updatableModel.Email != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Email, *updatableModel.Email))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Email, *updatableModel.Email))
 	}
 	if updatableModel.Password != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Password, *updatableModel.Password))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Password, *updatableModel.Password))
 	}
 	if updatableModel.CreatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.CreatedAt, *updatableModel.CreatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.CreatedAt, *updatableModel.CreatedAt))
 	}
 	if updatableModel.UpdatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.UpdatedAt, *updatableModel.UpdatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.UpdatedAt, *updatableModel.UpdatedAt))
 	}
 	if updatableModel.Role != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Role, *updatableModel.Role))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Role, *updatableModel.Role))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			UserTable,
+			User,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.Email, Email),
+			sqli.EQUAL(User.Email, Email),
 		),
 	)
 	if err != nil {
@@ -461,11 +463,11 @@ func SelectUserTableByID(
 ) (*UserModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		sqli.FROM(UserTable),
+		sqli.FROM(User),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.ID, ID),
+			sqli.EQUAL(User.ID, ID),
 		),
 		sqli.LIMIT(1),
 	)
@@ -499,10 +501,10 @@ func DeleteFromUserTableByID(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			UserTable,
+			User,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.ID, ID),
+			sqli.EQUAL(User.ID, ID),
 		),
 	)
 	if err != nil {
@@ -529,32 +531,32 @@ func InsertIntoUserTableReturningID(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(UserTable.ID, model.ID),
-			sqli.VALUE(UserTable.Name, model.Name),
-			sqli.VALUE(UserTable.Email, model.Email),
-			sqli.VALUE(UserTable.Password, model.Password),
-			sqli.VALUE(UserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(UserTable.UpdatedAt, model.UpdatedAt),
-			sqli.VALUE(UserTable.Role, model.Role),
+			sqli.VALUE(User.ID, model.ID),
+			sqli.VALUE(User.Name, model.Name),
+			sqli.VALUE(User.Email, model.Email),
+			sqli.VALUE(User.Password, model.Password),
+			sqli.VALUE(User.CreatedAt, model.CreatedAt),
+			sqli.VALUE(User.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(User.Role, model.Role),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			UserTable,
-			UserTable.ID,
-			UserTable.Name,
-			UserTable.Email,
-			UserTable.Password,
-			UserTable.CreatedAt,
-			UserTable.UpdatedAt,
-			UserTable.Role,
+			User,
+			User.ID,
+			User.Name,
+			User.Email,
+			User.Password,
+			User.CreatedAt,
+			User.UpdatedAt,
+			User.Role,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			UserTable.ID,
+			User.ID,
 		),
 	)
 	if err != nil {
@@ -582,36 +584,36 @@ func UpdateUserTableByID(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.ID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.ID, *updatableModel.ID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.ID, *updatableModel.ID))
 	}
 	if updatableModel.Name != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Name, *updatableModel.Name))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Name, *updatableModel.Name))
 	}
 	if updatableModel.Email != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Email, *updatableModel.Email))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Email, *updatableModel.Email))
 	}
 	if updatableModel.Password != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Password, *updatableModel.Password))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Password, *updatableModel.Password))
 	}
 	if updatableModel.CreatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.CreatedAt, *updatableModel.CreatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.CreatedAt, *updatableModel.CreatedAt))
 	}
 	if updatableModel.UpdatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.UpdatedAt, *updatableModel.UpdatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.UpdatedAt, *updatableModel.UpdatedAt))
 	}
 	if updatableModel.Role != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(UserTable.Role, *updatableModel.Role))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(User.Role, *updatableModel.Role))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			UserTable,
+			User,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(UserTable.ID, ID),
+			sqli.EQUAL(User.ID, ID),
 		),
 	)
 	if err != nil {

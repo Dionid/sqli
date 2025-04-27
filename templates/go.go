@@ -526,11 +526,14 @@ func emitSchema(ctx context.Context, schema xo.Schema, emit func(xo.Template)) e
 		})
 	}
 	// emit tables
+	tables := make([]Table, 0)
+
 	for _, t := range append(schema.Tables, schema.Views...) {
 		table, err := convertTable(ctx, t)
 		if err != nil {
 			return err
 		}
+		tables = append(tables, table)
 		emit(xo.Template{
 			Dest:     strings.ToLower(table.GoName) + ext,
 			Partial:  "typedef",
@@ -567,6 +570,14 @@ func emitSchema(ctx context.Context, schema xo.Schema, emit func(xo.Template)) e
 			})
 		}
 	}
+
+	// emit constants
+	emit(xo.Template{
+		Dest:    "constants" + ext,
+		Partial: "constants",
+		Data:    tables,
+	})
+
 	return nil
 }
 

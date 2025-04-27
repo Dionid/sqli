@@ -1,4 +1,8 @@
 {{ define "db" -}}
+
+// {{- printf "Template Data:\n" -}}
+// {{ printf "%#v\n\n" . -}}
+
 var (
 	// logf is used by generated code to log SQL queries.
 	logf = func(string, ...interface{}) {}

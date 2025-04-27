@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type OfficeUserTableSt struct {
+type OfficeUserTable struct {
 	sqli.Table
 	OfficeID  sqli.Column[uuid.UUID]
 	UserID    sqli.Column[uuid.UUID]
@@ -21,7 +21,7 @@ type OfficeUserTableSt struct {
 	UpdatedAt sqli.Column[sql.NullTime]
 }
 
-func (t OfficeUserTableSt) As(alias string) OfficeUserTableSt {
+func (t OfficeUserTable) As(alias string) OfficeUserTable {
 	t.Table.TableAlias = fmt.Sprintf(`"%s"`, alias)
 	t.OfficeID = sqli.NewColumnWithAlias[uuid.UUID](t.Table, t.OfficeID.ColumnName, t.OfficeID.ColumnAlias)
 	t.UserID = sqli.NewColumnWithAlias[uuid.UUID](t.Table, t.UserID.ColumnName, t.UserID.ColumnAlias)
@@ -31,33 +31,35 @@ func (t OfficeUserTableSt) As(alias string) OfficeUserTableSt {
 	return t
 }
 
-var OfficeUserTableBase = sqli.Table{
+var OfficeUserTableMeta = sqli.Table{
 	TableName:  `"office_user"`,
 	TableAlias: `"office_user"`,
 }
 
-var OfficeUserTable = OfficeUserTableSt{
-	Table:     OfficeUserTableBase,
-	OfficeID:  sqli.NewColumn[uuid.UUID](OfficeUserTableBase, `"office_id"`),
-	UserID:    sqli.NewColumn[uuid.UUID](OfficeUserTableBase, `"user_id"`),
-	CreatedAt: sqli.NewColumn[time.Time](OfficeUserTableBase, `"created_at"`),
-	UpdatedAt: sqli.NewColumn[sql.NullTime](OfficeUserTableBase, `"updated_at"`),
+var OfficeUser = OfficeUserTable{
+	Table:     OfficeUserTableMeta,
+	OfficeID:  sqli.NewColumn[uuid.UUID](OfficeUserTableMeta, `"office_id"`),
+	UserID:    sqli.NewColumn[uuid.UUID](OfficeUserTableMeta, `"user_id"`),
+	CreatedAt: sqli.NewColumn[time.Time](OfficeUserTableMeta, `"created_at"`),
+	UpdatedAt: sqli.NewColumn[sql.NullTime](OfficeUserTableMeta, `"updated_at"`),
 }
 
 // # Constants
 
+// # Columns Types
 type (
-	OfficeUserOfficeIDCT  = uuid.UUID
-	OfficeUserUserIDCT    = uuid.UUID
-	OfficeUserCreatedAtCT = time.Time
-	OfficeUserUpdatedAtCT = sql.NullTime
+	OfficeUserOfficeIDT  = uuid.UUID
+	OfficeUserUserIDT    = uuid.UUID
+	OfficeUserCreatedAtT = time.Time
+	OfficeUserUpdatedAtT = sql.NullTime
 )
 
+// # Columns Names
 const (
-	OfficeUserOfficeIDCN  = `"office_id"`
-	OfficeUserUserIDCN    = `"user_id"`
-	OfficeUserCreatedAtCN = `"created_at"`
-	OfficeUserUpdatedAtCN = `"updated_at"`
+	OfficeUserOfficeID  = `"office_id"`
+	OfficeUserUserID    = `"user_id"`
+	OfficeUserCreatedAt = `"created_at"`
+	OfficeUserUpdatedAt = `"updated_at"`
 )
 
 // # Model
@@ -123,20 +125,20 @@ func InsertIntoOfficeUserTable(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(OfficeUserTable.OfficeID, model.OfficeID),
-			sqli.VALUE(OfficeUserTable.UserID, model.UserID),
-			sqli.VALUE(OfficeUserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(OfficeUserTable.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(OfficeUser.OfficeID, model.OfficeID),
+			sqli.VALUE(OfficeUser.UserID, model.UserID),
+			sqli.VALUE(OfficeUser.CreatedAt, model.CreatedAt),
+			sqli.VALUE(OfficeUser.UpdatedAt, model.UpdatedAt),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			OfficeUserTable,
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
-			OfficeUserTable.CreatedAt,
-			OfficeUserTable.UpdatedAt,
+			OfficeUser,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
+			OfficeUser.CreatedAt,
+			OfficeUser.UpdatedAt,
 		),
 		sqli.VALUES(
 			valueSetList...,
@@ -166,25 +168,25 @@ func InsertIntoOfficeUserTableReturningAll(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(OfficeUserTable.OfficeID, model.OfficeID),
-			sqli.VALUE(OfficeUserTable.UserID, model.UserID),
-			sqli.VALUE(OfficeUserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(OfficeUserTable.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(OfficeUser.OfficeID, model.OfficeID),
+			sqli.VALUE(OfficeUser.UserID, model.UserID),
+			sqli.VALUE(OfficeUser.CreatedAt, model.CreatedAt),
+			sqli.VALUE(OfficeUser.UpdatedAt, model.UpdatedAt),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			OfficeUserTable,
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
-			OfficeUserTable.CreatedAt,
-			OfficeUserTable.UpdatedAt,
+			OfficeUser,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
+			OfficeUser.CreatedAt,
+			OfficeUser.UpdatedAt,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
-		sqli.RETURNING(OfficeUserTable.AllColumns()),
+		sqli.RETURNING(OfficeUser.AllColumns()),
 	)
 	if err != nil {
 		return nil, err
@@ -237,13 +239,13 @@ func SelectFromOfficeUserTableByOfficeIDUserID(
 ) (*OfficeUserModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			OfficeUserTable.AllColumns(),
+			OfficeUser.AllColumns(),
 		),
-		sqli.FROM(OfficeUserTable),
+		sqli.FROM(OfficeUser),
 		sqli.WHERE(
 			sqli.AND(
-				sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
-				sqli.EQUAL(OfficeUserTable.UserID, UserID),
+				sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
+				sqli.EQUAL(OfficeUser.UserID, UserID),
 			),
 		),
 		sqli.LIMIT(1),
@@ -276,12 +278,12 @@ func DeleteFromOfficeUserTableByOfficeIDUserID(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.WHERE(
 			sqli.AND(
-				sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
-				sqli.EQUAL(OfficeUserTable.UserID, UserID),
+				sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
+				sqli.EQUAL(OfficeUser.UserID, UserID),
 			),
 		),
 	)
@@ -303,29 +305,29 @@ func UpdateOfficeUserTableByOfficeIDUserID(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.OfficeID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.OfficeID, *updatableModel.OfficeID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.OfficeID, *updatableModel.OfficeID))
 	}
 	if updatableModel.UserID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UserID, *updatableModel.UserID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UserID, *updatableModel.UserID))
 	}
 	if updatableModel.CreatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.CreatedAt, *updatableModel.CreatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.CreatedAt, *updatableModel.CreatedAt))
 	}
 	if updatableModel.UpdatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UpdatedAt, *updatableModel.UpdatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UpdatedAt, *updatableModel.UpdatedAt))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
 			sqli.AND(
-				sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
-				sqli.EQUAL(OfficeUserTable.UserID, UserID),
+				sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
+				sqli.EQUAL(OfficeUser.UserID, UserID),
 			),
 		),
 	)
@@ -358,27 +360,27 @@ func InsertIntoOfficeUserTableReturningOfficeIDUserID(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(OfficeUserTable.OfficeID, model.OfficeID),
-			sqli.VALUE(OfficeUserTable.UserID, model.UserID),
-			sqli.VALUE(OfficeUserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(OfficeUserTable.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(OfficeUser.OfficeID, model.OfficeID),
+			sqli.VALUE(OfficeUser.UserID, model.UserID),
+			sqli.VALUE(OfficeUser.CreatedAt, model.CreatedAt),
+			sqli.VALUE(OfficeUser.UpdatedAt, model.UpdatedAt),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			OfficeUserTable,
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
-			OfficeUserTable.CreatedAt,
-			OfficeUserTable.UpdatedAt,
+			OfficeUser,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
+			OfficeUser.CreatedAt,
+			OfficeUser.UpdatedAt,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
 		),
 	)
 	if err != nil {
@@ -403,11 +405,11 @@ func SelectOfficeUserTableByOfficeID(
 ) ([]*OfficeUserModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			OfficeUserTable.AllColumns(),
+			OfficeUser.AllColumns(),
 		),
-		sqli.FROM(OfficeUserTable),
+		sqli.FROM(OfficeUser),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
+			sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
 		),
 	)
 	if err != nil {
@@ -443,11 +445,11 @@ func SelectOfficeUserTableByUserID(
 ) ([]*OfficeUserModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			OfficeUserTable.AllColumns(),
+			OfficeUser.AllColumns(),
 		),
-		sqli.FROM(OfficeUserTable),
+		sqli.FROM(OfficeUser),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.UserID, UserID),
+			sqli.EQUAL(OfficeUser.UserID, UserID),
 		),
 	)
 	if err != nil {
@@ -483,10 +485,10 @@ func DeleteFromOfficeUserTableByOfficeID(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
+			sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
 		),
 	)
 	if err != nil {
@@ -513,26 +515,26 @@ func InsertIntoOfficeUserTableReturningOfficeID(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(OfficeUserTable.OfficeID, model.OfficeID),
-			sqli.VALUE(OfficeUserTable.UserID, model.UserID),
-			sqli.VALUE(OfficeUserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(OfficeUserTable.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(OfficeUser.OfficeID, model.OfficeID),
+			sqli.VALUE(OfficeUser.UserID, model.UserID),
+			sqli.VALUE(OfficeUser.CreatedAt, model.CreatedAt),
+			sqli.VALUE(OfficeUser.UpdatedAt, model.UpdatedAt),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			OfficeUserTable,
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
-			OfficeUserTable.CreatedAt,
-			OfficeUserTable.UpdatedAt,
+			OfficeUser,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
+			OfficeUser.CreatedAt,
+			OfficeUser.UpdatedAt,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			OfficeUserTable.OfficeID,
+			OfficeUser.OfficeID,
 		),
 	)
 	if err != nil {
@@ -560,27 +562,27 @@ func UpdateOfficeUserTableByOfficeID(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.OfficeID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.OfficeID, *updatableModel.OfficeID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.OfficeID, *updatableModel.OfficeID))
 	}
 	if updatableModel.UserID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UserID, *updatableModel.UserID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UserID, *updatableModel.UserID))
 	}
 	if updatableModel.CreatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.CreatedAt, *updatableModel.CreatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.CreatedAt, *updatableModel.CreatedAt))
 	}
 	if updatableModel.UpdatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UpdatedAt, *updatableModel.UpdatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UpdatedAt, *updatableModel.UpdatedAt))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.OfficeID, OfficeID),
+			sqli.EQUAL(OfficeUser.OfficeID, OfficeID),
 		),
 	)
 	if err != nil {
@@ -598,10 +600,10 @@ func DeleteFromOfficeUserTableByUserID(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.UserID, UserID),
+			sqli.EQUAL(OfficeUser.UserID, UserID),
 		),
 	)
 	if err != nil {
@@ -628,26 +630,26 @@ func InsertIntoOfficeUserTableReturningUserID(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(OfficeUserTable.OfficeID, model.OfficeID),
-			sqli.VALUE(OfficeUserTable.UserID, model.UserID),
-			sqli.VALUE(OfficeUserTable.CreatedAt, model.CreatedAt),
-			sqli.VALUE(OfficeUserTable.UpdatedAt, model.UpdatedAt),
+			sqli.VALUE(OfficeUser.OfficeID, model.OfficeID),
+			sqli.VALUE(OfficeUser.UserID, model.UserID),
+			sqli.VALUE(OfficeUser.CreatedAt, model.CreatedAt),
+			sqli.VALUE(OfficeUser.UpdatedAt, model.UpdatedAt),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			OfficeUserTable,
-			OfficeUserTable.OfficeID,
-			OfficeUserTable.UserID,
-			OfficeUserTable.CreatedAt,
-			OfficeUserTable.UpdatedAt,
+			OfficeUser,
+			OfficeUser.OfficeID,
+			OfficeUser.UserID,
+			OfficeUser.CreatedAt,
+			OfficeUser.UpdatedAt,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			OfficeUserTable.UserID,
+			OfficeUser.UserID,
 		),
 	)
 	if err != nil {
@@ -675,27 +677,27 @@ func UpdateOfficeUserTableByUserID(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.OfficeID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.OfficeID, *updatableModel.OfficeID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.OfficeID, *updatableModel.OfficeID))
 	}
 	if updatableModel.UserID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UserID, *updatableModel.UserID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UserID, *updatableModel.UserID))
 	}
 	if updatableModel.CreatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.CreatedAt, *updatableModel.CreatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.CreatedAt, *updatableModel.CreatedAt))
 	}
 	if updatableModel.UpdatedAt != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUserTable.UpdatedAt, *updatableModel.UpdatedAt))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(OfficeUser.UpdatedAt, *updatableModel.UpdatedAt))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			OfficeUserTable,
+			OfficeUser,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(OfficeUserTable.UserID, UserID),
+			sqli.EQUAL(OfficeUser.UserID, UserID),
 		),
 	)
 	if err != nil {

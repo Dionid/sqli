@@ -12,7 +12,7 @@ import (
 	"github.com/Dionid/sqli"
 )
 
-type GooseDbVersionTableSt struct {
+type GooseDbVersionTable struct {
 	sqli.Table
 	ID        sqli.Column[int]
 	VersionID sqli.Column[int64]
@@ -20,7 +20,7 @@ type GooseDbVersionTableSt struct {
 	Tstamp    sqli.Column[time.Time]
 }
 
-func (t GooseDbVersionTableSt) As(alias string) GooseDbVersionTableSt {
+func (t GooseDbVersionTable) As(alias string) GooseDbVersionTable {
 	t.Table.TableAlias = fmt.Sprintf(`"%s"`, alias)
 	t.ID = sqli.NewColumnWithAlias[int](t.Table, t.ID.ColumnName, t.ID.ColumnAlias)
 	t.VersionID = sqli.NewColumnWithAlias[int64](t.Table, t.VersionID.ColumnName, t.VersionID.ColumnAlias)
@@ -30,33 +30,35 @@ func (t GooseDbVersionTableSt) As(alias string) GooseDbVersionTableSt {
 	return t
 }
 
-var GooseDbVersionTableBase = sqli.Table{
+var GooseDbVersionTableMeta = sqli.Table{
 	TableName:  `"goose_db_version"`,
 	TableAlias: `"goose_db_version"`,
 }
 
-var GooseDbVersionTable = GooseDbVersionTableSt{
-	Table:     GooseDbVersionTableBase,
-	ID:        sqli.NewColumn[int](GooseDbVersionTableBase, `"id"`),
-	VersionID: sqli.NewColumn[int64](GooseDbVersionTableBase, `"version_id"`),
-	IsApplied: sqli.NewColumn[bool](GooseDbVersionTableBase, `"is_applied"`),
-	Tstamp:    sqli.NewColumn[time.Time](GooseDbVersionTableBase, `"tstamp"`),
+var GooseDbVersion = GooseDbVersionTable{
+	Table:     GooseDbVersionTableMeta,
+	ID:        sqli.NewColumn[int](GooseDbVersionTableMeta, `"id"`),
+	VersionID: sqli.NewColumn[int64](GooseDbVersionTableMeta, `"version_id"`),
+	IsApplied: sqli.NewColumn[bool](GooseDbVersionTableMeta, `"is_applied"`),
+	Tstamp:    sqli.NewColumn[time.Time](GooseDbVersionTableMeta, `"tstamp"`),
 }
 
 // # Constants
 
+// # Columns Types
 type (
-	GooseDbVersionIDCT        = int
-	GooseDbVersionVersionIDCT = int64
-	GooseDbVersionIsAppliedCT = bool
-	GooseDbVersionTstampCT    = time.Time
+	GooseDbVersionIDT        = int
+	GooseDbVersionVersionIDT = int64
+	GooseDbVersionIsAppliedT = bool
+	GooseDbVersionTstampT    = time.Time
 )
 
+// # Columns Names
 const (
-	GooseDbVersionIDCN        = `"id"`
-	GooseDbVersionVersionIDCN = `"version_id"`
-	GooseDbVersionIsAppliedCN = `"is_applied"`
-	GooseDbVersionTstampCN    = `"tstamp"`
+	GooseDbVersionID        = `"id"`
+	GooseDbVersionVersionID = `"version_id"`
+	GooseDbVersionIsApplied = `"is_applied"`
+	GooseDbVersionTstamp    = `"tstamp"`
 )
 
 // # Model
@@ -119,18 +121,18 @@ func InsertIntoGooseDbVersionTable(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(GooseDbVersionTable.VersionID, model.VersionID),
-			sqli.VALUE(GooseDbVersionTable.IsApplied, model.IsApplied),
-			sqli.VALUE(GooseDbVersionTable.Tstamp, model.Tstamp),
+			sqli.VALUE(GooseDbVersion.VersionID, model.VersionID),
+			sqli.VALUE(GooseDbVersion.IsApplied, model.IsApplied),
+			sqli.VALUE(GooseDbVersion.Tstamp, model.Tstamp),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			GooseDbVersionTable,
-			GooseDbVersionTable.VersionID,
-			GooseDbVersionTable.IsApplied,
-			GooseDbVersionTable.Tstamp,
+			GooseDbVersion,
+			GooseDbVersion.VersionID,
+			GooseDbVersion.IsApplied,
+			GooseDbVersion.Tstamp,
 		),
 		sqli.VALUES(
 			valueSetList...,
@@ -160,23 +162,23 @@ func InsertIntoGooseDbVersionTableReturningAll(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(GooseDbVersionTable.VersionID, model.VersionID),
-			sqli.VALUE(GooseDbVersionTable.IsApplied, model.IsApplied),
-			sqli.VALUE(GooseDbVersionTable.Tstamp, model.Tstamp),
+			sqli.VALUE(GooseDbVersion.VersionID, model.VersionID),
+			sqli.VALUE(GooseDbVersion.IsApplied, model.IsApplied),
+			sqli.VALUE(GooseDbVersion.Tstamp, model.Tstamp),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			GooseDbVersionTable,
-			GooseDbVersionTable.VersionID,
-			GooseDbVersionTable.IsApplied,
-			GooseDbVersionTable.Tstamp,
+			GooseDbVersion,
+			GooseDbVersion.VersionID,
+			GooseDbVersion.IsApplied,
+			GooseDbVersion.Tstamp,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
-		sqli.RETURNING(GooseDbVersionTable.AllColumns()),
+		sqli.RETURNING(GooseDbVersion.AllColumns()),
 	)
 	if err != nil {
 		return nil, err
@@ -228,11 +230,11 @@ func SelectGooseDbVersionTableByID(
 ) (*GooseDbVersionModel, error) {
 	query, err := sqli.Query(
 		sqli.SELECT(
-			GooseDbVersionTable.AllColumns(),
+			GooseDbVersion.AllColumns(),
 		),
-		sqli.FROM(GooseDbVersionTable),
+		sqli.FROM(GooseDbVersion),
 		sqli.WHERE(
-			sqli.EQUAL(GooseDbVersionTable.ID, ID),
+			sqli.EQUAL(GooseDbVersion.ID, ID),
 		),
 		sqli.LIMIT(1),
 	)
@@ -263,10 +265,10 @@ func DeleteFromGooseDbVersionTableByID(
 ) (sql.Result, error) {
 	query, err := sqli.Query(
 		sqli.DELETE_FROM(
-			GooseDbVersionTable,
+			GooseDbVersion,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(GooseDbVersionTable.ID, ID),
+			sqli.EQUAL(GooseDbVersion.ID, ID),
 		),
 	)
 	if err != nil {
@@ -293,24 +295,24 @@ func InsertIntoGooseDbVersionTableReturningID(
 		}
 
 		valueSetList[i] = sqli.ValueSet(
-			sqli.VALUE(GooseDbVersionTable.VersionID, model.VersionID),
-			sqli.VALUE(GooseDbVersionTable.IsApplied, model.IsApplied),
-			sqli.VALUE(GooseDbVersionTable.Tstamp, model.Tstamp),
+			sqli.VALUE(GooseDbVersion.VersionID, model.VersionID),
+			sqli.VALUE(GooseDbVersion.IsApplied, model.IsApplied),
+			sqli.VALUE(GooseDbVersion.Tstamp, model.Tstamp),
 		)
 	}
 
 	query, err := sqli.Query(
 		sqli.INSERT_INTO(
-			GooseDbVersionTable,
-			GooseDbVersionTable.VersionID,
-			GooseDbVersionTable.IsApplied,
-			GooseDbVersionTable.Tstamp,
+			GooseDbVersion,
+			GooseDbVersion.VersionID,
+			GooseDbVersion.IsApplied,
+			GooseDbVersion.Tstamp,
 		),
 		sqli.VALUES(
 			valueSetList...,
 		),
 		sqli.RETURNING(
-			GooseDbVersionTable.ID,
+			GooseDbVersion.ID,
 		),
 	)
 	if err != nil {
@@ -338,27 +340,27 @@ func UpdateGooseDbVersionTableByID(
 	valuesSetList := []sqli.Statement{}
 
 	if updatableModel.ID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersionTable.ID, *updatableModel.ID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersion.ID, *updatableModel.ID))
 	}
 	if updatableModel.VersionID != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersionTable.VersionID, *updatableModel.VersionID))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersion.VersionID, *updatableModel.VersionID))
 	}
 	if updatableModel.IsApplied != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersionTable.IsApplied, *updatableModel.IsApplied))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersion.IsApplied, *updatableModel.IsApplied))
 	}
 	if updatableModel.Tstamp != nil {
-		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersionTable.Tstamp, *updatableModel.Tstamp))
+		valuesSetList = append(valuesSetList, sqli.SET_VALUE(GooseDbVersion.Tstamp, *updatableModel.Tstamp))
 	}
 
 	query, err := sqli.Query(
 		sqli.UPDATE(
-			GooseDbVersionTable,
+			GooseDbVersion,
 		),
 		sqli.SET(
 			valuesSetList...,
 		),
 		sqli.WHERE(
-			sqli.EQUAL(GooseDbVersionTable.ID, ID),
+			sqli.EQUAL(GooseDbVersion.ID, ID),
 		),
 	)
 	if err != nil {

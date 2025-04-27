@@ -12,12 +12,12 @@ func TestSimpleUpdate(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE(UserTable.Password, "test"),
+			SET_VALUE(User.Password, "test"),
 		),
 		WHERE(
-			EQUAL(UserTable.ID, id),
+			EQUAL(User.ID, id),
 		),
 	)
 	if err != nil {
@@ -43,9 +43,9 @@ func TestSimpleUpdate(t *testing.T) {
 
 func TestSimpleUpdateError(t *testing.T) {
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE(UserTable.Password, "test"),
+			SET_VALUE(User.Password, "test"),
 		),
 	)
 	if err == nil {
@@ -57,12 +57,12 @@ func TestUpdateMoreArgs(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE(UserTable.Password, "test"),
-			SET_VALUE(UserTable.Email, "some@mail.com"),
+			SET_VALUE(User.Password, "test"),
+			SET_VALUE(User.Email, "some@mail.com"),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -93,12 +93,12 @@ func TestUpdateReturningAll(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE(UserTable.Password, "test"),
+			SET_VALUE(User.Password, "test"),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
-		RETURNING(UserTable.AllColumns()),
+		WHERE(EQUAL(User.ID, id)),
+		RETURNING(User.AllColumns()),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -125,12 +125,12 @@ func TestUpdateReturning(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE(UserTable.Password, "test"),
+			SET_VALUE(User.Password, "test"),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
-		RETURNING(UserTable.ID),
+		WHERE(EQUAL(User.ID, id)),
+		RETURNING(User.ID),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -175,21 +175,21 @@ func TestUpdateWith(t *testing.T) {
 				StatementFromTableAlias(tmpTable),
 				SubQuery(
 					SELECT(
-						UserTable.Password,
-						UserTable.Email,
+						User.Password,
+						User.Email,
 					),
-					FROM(UserTable),
-					WHERE(EQUAL(UserTable.ID, id)),
+					FROM(User),
+					WHERE(EQUAL(User.ID, id)),
 				),
 			),
 		),
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE_COLUMN(UserTable.Password, tmpTable.Password),
-			SET_VALUE_COLUMN(UserTable.Email, tmpTable.Email),
+			SET_VALUE_COLUMN(User.Password, tmpTable.Password),
+			SET_VALUE_COLUMN(User.Email, tmpTable.Email),
 		),
 		FROM(tmpTable),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -229,10 +229,10 @@ func TestUpdateFromValues(t *testing.T) {
 	}
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE_COLUMN(UserTable.Password, tmpTable.Password),
-			SET_VALUE_COLUMN(UserTable.Email, tmpTable.Email),
+			SET_VALUE_COLUMN(User.Password, tmpTable.Password),
+			SET_VALUE_COLUMN(User.Email, tmpTable.Email),
 		),
 		FROM_RAW(
 			AS(
@@ -249,7 +249,7 @@ func TestUpdateFromValues(t *testing.T) {
 				),
 			),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -279,13 +279,13 @@ func TestUpdateFromValues(t *testing.T) {
 func TestUpdateFromOtherTable(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
-	tmpTable := UserTable.As("usr")
+	tmpTable := User.As("usr")
 
 	query, err := Query(
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE_COLUMN(UserTable.Password, tmpTable.Password),
-			SET_VALUE_COLUMN(UserTable.Email, tmpTable.Email),
+			SET_VALUE_COLUMN(User.Password, tmpTable.Password),
+			SET_VALUE_COLUMN(User.Email, tmpTable.Email),
 		),
 		FROM_RAW(
 			AS(
@@ -302,7 +302,7 @@ func TestUpdateFromOtherTable(t *testing.T) {
 				tmpTable,
 			),
 		),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -357,13 +357,13 @@ func TestUpdateFromWith(t *testing.T) {
 				),
 			),
 		),
-		UPDATE(UserTable),
+		UPDATE(User),
 		SET(
-			SET_VALUE_COLUMN(UserTable.Password, tmpTable.Password),
-			SET_VALUE_COLUMN(UserTable.Email, tmpTable.Email),
+			SET_VALUE_COLUMN(User.Password, tmpTable.Password),
+			SET_VALUE_COLUMN(User.Email, tmpTable.Email),
 		),
 		FROM(tmpTable),
-		WHERE(EQUAL(UserTable.ID, id)),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -394,8 +394,8 @@ func TestSimpleDelete(t *testing.T) {
 	id := uuid.MustParse("c153f078-9ca1-455e-90ff-dc9975948259")
 
 	query, err := Query(
-		DELETE_FROM(UserTable),
-		WHERE(EQUAL(UserTable.ID, id)),
+		DELETE_FROM(User),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -416,7 +416,7 @@ func TestSimpleDelete(t *testing.T) {
 
 func TestSimpleDeleteError(t *testing.T) {
 	query, err := Query(
-		DELETE_FROM(UserTable),
+		DELETE_FROM(User),
 	)
 	if err == nil {
 		t.Errorf("Error is nil: %s", query)
@@ -425,11 +425,11 @@ func TestSimpleDeleteError(t *testing.T) {
 
 func TestInsertSimple(t *testing.T) {
 	query, err := Query(
-		INSERT_INTO(UserTable),
+		INSERT_INTO(User),
 		VALUES(
 			ValueSet(
-				VALUE(UserTable.Password, "test"),
-				VALUE(UserTable.Email, "mail@test.com"),
+				VALUE(User.Password, "test"),
+				VALUE(User.Email, "mail@test.com"),
 			),
 		),
 	)
@@ -456,11 +456,11 @@ func TestInsertSimple(t *testing.T) {
 
 func TestInsertWithColumns(t *testing.T) {
 	query, err := Query(
-		INSERT_INTO(UserTable, UserTable.Password, UserTable.Email),
+		INSERT_INTO(User, User.Password, User.Email),
 		VALUES(
 			ValuesSetSt{
-				VALUE(UserTable.Password, "test"),
-				VALUE(UserTable.Email, "mail@test.com"),
+				VALUE(User.Password, "test"),
+				VALUE(User.Email, "mail@test.com"),
 			},
 		),
 	)
@@ -488,10 +488,10 @@ func TestInsertWithColumns(t *testing.T) {
 func TestSimpleSelect(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Password,
-			UserTable.Email,
+			User.Password,
+			User.Email,
 		),
-		FROM(UserTable),
+		FROM(User),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -509,9 +509,9 @@ func TestSimpleSelect(t *testing.T) {
 func TestSelectAll(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
+		FROM(User),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -531,10 +531,10 @@ func TestSelectWhere(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
-		WHERE(EQUAL(UserTable.ID, id)),
+		FROM(User),
+		WHERE(EQUAL(User.ID, id)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -558,13 +558,13 @@ func TestSelectWhereOr(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
+		FROM(User),
 		WHERE(
 			OR(
-				EQUAL(UserTable.ID, id),
-				EQUAL(UserTable.Email, "mail@test.com"),
+				EQUAL(User.ID, id),
+				EQUAL(User.Email, "mail@test.com"),
 			),
 		),
 	)
@@ -594,13 +594,13 @@ func TestSelectWhereAnd(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
+		FROM(User),
 		WHERE(
 			AND(
-				EQUAL(UserTable.ID, id),
-				EQUAL(UserTable.Email, "mail@test.com"),
+				EQUAL(User.ID, id),
+				EQUAL(User.Email, "mail@test.com"),
 			),
 		),
 	)
@@ -630,18 +630,18 @@ func TestSelectWhereOrAnd(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
+		FROM(User),
 		WHERE(
 			OR(
 				AND(
-					EQUAL(UserTable.ID, id),
-					EQUAL(UserTable.Email, "mail@test.com"),
+					EQUAL(User.ID, id),
+					EQUAL(User.Email, "mail@test.com"),
 				),
 				AND(
-					EQUAL(UserTable.ID, id),
-					EQUAL(UserTable.Email, "mail2@test.com"),
+					EQUAL(User.ID, id),
+					EQUAL(User.Email, "mail2@test.com"),
 				),
 			),
 		),
@@ -680,11 +680,11 @@ func TestSelectOrderBy(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
-		WHERE(EQUAL(UserTable.ID, id)),
-		ORDER_BY(NewColumnOrder(UserTable, UserTable.CreatedAt, DESC)),
+		FROM(User),
+		WHERE(EQUAL(User.ID, id)),
+		ORDER_BY(NewColumnOrder(User, User.CreatedAt, DESC)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -708,12 +708,12 @@ func TestSelectGroupBy(t *testing.T) {
 
 	query, err := Query(
 		SELECT(
-			UserTable.AllColumns(),
+			User.AllColumns(),
 		),
-		FROM(UserTable),
-		WHERE(EQUAL(UserTable.ID, id)),
-		GROUP_BY(NewColumnWithTable(UserTable, UserTable.Email)),
-		ORDER_BY(NewColumnOrder(UserTable, UserTable.CreatedAt, DESC)),
+		FROM(User),
+		WHERE(EQUAL(User.ID, id)),
+		GROUP_BY(NewColumnWithTable(User, User.Email)),
+		ORDER_BY(NewColumnOrder(User, User.CreatedAt, DESC)),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
@@ -735,14 +735,14 @@ func TestSelectGroupBy(t *testing.T) {
 func TestSelectLeftJoin(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Name,
+			User.Name,
 		),
 		FROM(
-			UserTable,
+			User,
 		),
 		LEFT_JOIN(
-			OfficeUserTable,
-			EQUAL_COLUMNS(OfficeUserTable.UserID, UserTable.ID),
+			OfficeUser,
+			EQUAL_COLUMNS(OfficeUser.UserID, User.ID),
 		),
 	)
 	if err != nil {
@@ -761,14 +761,14 @@ func TestSelectLeftJoin(t *testing.T) {
 func TestSelectRightJoin(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Name,
+			User.Name,
 		),
 		FROM(
-			UserTable,
+			User,
 		),
 		RIGHT_JOIN(
-			OfficeUserTable,
-			EQUAL_COLUMNS(OfficeUserTable.UserID, UserTable.ID),
+			OfficeUser,
+			EQUAL_COLUMNS(OfficeUser.UserID, User.ID),
 		),
 	)
 	if err != nil {
@@ -787,14 +787,14 @@ func TestSelectRightJoin(t *testing.T) {
 func TestSelectInnerJoin(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Name,
+			User.Name,
 		),
 		FROM(
-			UserTable,
+			User,
 		),
 		INNER_JOIN(
-			OfficeUserTable,
-			EQUAL_COLUMNS(OfficeUserTable.UserID, UserTable.ID),
+			OfficeUser,
+			EQUAL_COLUMNS(OfficeUser.UserID, User.ID),
 		),
 	)
 	if err != nil {
@@ -813,14 +813,14 @@ func TestSelectInnerJoin(t *testing.T) {
 func TestSelectFullJoin(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Name,
+			User.Name,
 		),
 		FROM(
-			UserTable,
+			User,
 		),
 		FULL_JOIN(
-			OfficeUserTable,
-			EQUAL_COLUMNS(OfficeUserTable.UserID, UserTable.ID),
+			OfficeUser,
+			EQUAL_COLUMNS(OfficeUser.UserID, User.ID),
 		),
 	)
 	if err != nil {
@@ -839,14 +839,14 @@ func TestSelectFullJoin(t *testing.T) {
 func TestSelectCrossJoin(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			UserTable.Name,
+			User.Name,
 		),
 		FROM(
-			UserTable,
+			User,
 		),
 		CROSS_JOIN(
-			OfficeUserTable,
-			EQUAL_COLUMNS(OfficeUserTable.UserID, UserTable.ID),
+			OfficeUser,
+			EQUAL_COLUMNS(OfficeUser.UserID, User.ID),
 		),
 	)
 	if err != nil {
@@ -865,9 +865,9 @@ func TestSelectCrossJoin(t *testing.T) {
 func TestSelectCount(t *testing.T) {
 	query, err := Query(
 		SELECT(
-			COUNT(UserTable.ID),
+			COUNT(User.ID),
 		),
-		FROM(UserTable),
+		FROM(User),
 	)
 	if err != nil {
 		t.Errorf("Error is not nil: %s", err)
