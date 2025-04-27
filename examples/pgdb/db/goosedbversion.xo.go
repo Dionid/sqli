@@ -30,17 +30,17 @@ func (t GooseDbVersionTable) As(alias string) GooseDbVersionTable {
 	return t
 }
 
-var GooseDbVersionTableMeta = sqli.Table{
+var GooseDbVersionMeta = sqli.Table{
 	TableName:  `"goose_db_version"`,
 	TableAlias: `"goose_db_version"`,
 }
 
 var GooseDbVersion = GooseDbVersionTable{
-	Table:     GooseDbVersionTableMeta,
-	ID:        sqli.NewColumn[int](GooseDbVersionTableMeta, `"id"`),
-	VersionID: sqli.NewColumn[int64](GooseDbVersionTableMeta, `"version_id"`),
-	IsApplied: sqli.NewColumn[bool](GooseDbVersionTableMeta, `"is_applied"`),
-	Tstamp:    sqli.NewColumn[time.Time](GooseDbVersionTableMeta, `"tstamp"`),
+	Table:     GooseDbVersionMeta,
+	ID:        sqli.NewColumn[int](GooseDbVersionMeta, `"id"`),
+	VersionID: sqli.NewColumn[int64](GooseDbVersionMeta, `"version_id"`),
+	IsApplied: sqli.NewColumn[bool](GooseDbVersionMeta, `"is_applied"`),
+	Tstamp:    sqli.NewColumn[time.Time](GooseDbVersionMeta, `"tstamp"`),
 }
 
 // # Constants
@@ -104,7 +104,7 @@ func NewInsertableGooseDbVersionModel(
 	}
 }
 
-func InsertIntoGooseDbVersionTable(
+func InsertIntoGooseDbVersion(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableGooseDbVersionModel,
@@ -145,7 +145,7 @@ func InsertIntoGooseDbVersionTable(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoGooseDbVersionTableReturningAll(
+func InsertIntoGooseDbVersionReturningAll(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableGooseDbVersionModel,
@@ -223,7 +223,7 @@ func NewUpdatableGooseDbVersionModel(
 }
 
 // ## Select by ID
-func SelectGooseDbVersionTableByID(
+func SelectGooseDbVersionByID(
 	ctx context.Context,
 	db DB,
 	ID int,
@@ -258,7 +258,7 @@ func SelectGooseDbVersionTableByID(
 }
 
 // ## Delete by ID
-func DeleteFromGooseDbVersionTableByID(
+func DeleteFromGooseDbVersionByID(
 	ctx context.Context,
 	db DB,
 	ID int,
@@ -278,13 +278,13 @@ func DeleteFromGooseDbVersionTableByID(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoGooseDbVersionTableReturningID(
+func InsertIntoGooseDbVersionReturningID(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableGooseDbVersionModel,
 ) (*int, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoGooseDbVersionTableReturningIDResult is nil")
+		return nil, errors.New("InsertIntoGooseDbVersionReturningIDResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -331,7 +331,7 @@ func InsertIntoGooseDbVersionTableReturningID(
 
 // # Update
 // ## Update by ID
-func UpdateGooseDbVersionTableByID(
+func UpdateGooseDbVersionByID(
 	ctx context.Context,
 	db DB,
 	ID int,

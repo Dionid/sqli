@@ -31,17 +31,17 @@ func (t OfficeUserTable) As(alias string) OfficeUserTable {
 	return t
 }
 
-var OfficeUserTableMeta = sqli.Table{
+var OfficeUserMeta = sqli.Table{
 	TableName:  `"office_user"`,
 	TableAlias: `"office_user"`,
 }
 
 var OfficeUser = OfficeUserTable{
-	Table:     OfficeUserTableMeta,
-	OfficeID:  sqli.NewColumn[uuid.UUID](OfficeUserTableMeta, `"office_id"`),
-	UserID:    sqli.NewColumn[uuid.UUID](OfficeUserTableMeta, `"user_id"`),
-	CreatedAt: sqli.NewColumn[time.Time](OfficeUserTableMeta, `"created_at"`),
-	UpdatedAt: sqli.NewColumn[sql.NullTime](OfficeUserTableMeta, `"updated_at"`),
+	Table:     OfficeUserMeta,
+	OfficeID:  sqli.NewColumn[uuid.UUID](OfficeUserMeta, `"office_id"`),
+	UserID:    sqli.NewColumn[uuid.UUID](OfficeUserMeta, `"user_id"`),
+	CreatedAt: sqli.NewColumn[time.Time](OfficeUserMeta, `"created_at"`),
+	UpdatedAt: sqli.NewColumn[sql.NullTime](OfficeUserMeta, `"updated_at"`),
 }
 
 // # Constants
@@ -108,7 +108,7 @@ func NewInsertableOfficeUserModel(
 	}
 }
 
-func InsertIntoOfficeUserTable(
+func InsertIntoOfficeUser(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableOfficeUserModel,
@@ -151,7 +151,7 @@ func InsertIntoOfficeUserTable(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoOfficeUserTableReturningAll(
+func InsertIntoOfficeUserReturningAll(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableOfficeUserModel,
@@ -231,7 +231,7 @@ func NewUpdatableOfficeUserModel(
 }
 
 // ## Select by compound
-func SelectFromOfficeUserTableByOfficeIDUserID(
+func SelectFromOfficeUserByOfficeIDUserID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -270,7 +270,7 @@ func SelectFromOfficeUserTableByOfficeIDUserID(
 }
 
 // ## Delete by compound
-func DeleteFromOfficeUserTableByOfficeIDUserID(
+func DeleteFromOfficeUserByOfficeIDUserID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -295,7 +295,7 @@ func DeleteFromOfficeUserTableByOfficeIDUserID(
 }
 
 // ## Update by compound
-func UpdateOfficeUserTableByOfficeIDUserID(
+func UpdateOfficeUserByOfficeIDUserID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -338,18 +338,18 @@ func UpdateOfficeUserTableByOfficeIDUserID(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-type InsertIntoOfficeUserTableReturningOfficeIDUserIDResult struct {
+type InsertIntoOfficeUserReturningOfficeIDUserIDResult struct {
 	OfficeID uuid.UUID `json:"office_id" db:"office_id"`
 	UserID   uuid.UUID `json:"user_id" db:"user_id"`
 }
 
-func InsertIntoOfficeUserTableReturningOfficeIDUserID(
+func InsertIntoOfficeUserReturningOfficeIDUserID(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableOfficeUserModel,
-) (*InsertIntoOfficeUserTableReturningOfficeIDUserIDResult, error) {
+) (*InsertIntoOfficeUserReturningOfficeIDUserIDResult, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoOfficeUserTableReturningOfficeIDUserIDResult is nil")
+		return nil, errors.New("InsertIntoOfficeUserReturningOfficeIDUserIDResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -388,7 +388,7 @@ func InsertIntoOfficeUserTableReturningOfficeIDUserID(
 	}
 
 	row := db.QueryRowxContext(ctx, query.SQL, query.Args...)
-	returning := &InsertIntoOfficeUserTableReturningOfficeIDUserIDResult{}
+	returning := &InsertIntoOfficeUserReturningOfficeIDUserIDResult{}
 	err = row.Scan(returning)
 	if err != nil {
 		return nil, err
@@ -398,7 +398,7 @@ func InsertIntoOfficeUserTableReturningOfficeIDUserID(
 }
 
 // ## Select by OfficeID
-func SelectOfficeUserTableByOfficeID(
+func SelectOfficeUserByOfficeID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -438,7 +438,7 @@ func SelectOfficeUserTableByOfficeID(
 }
 
 // ## Select by UserID
-func SelectOfficeUserTableByUserID(
+func SelectOfficeUserByUserID(
 	ctx context.Context,
 	db DB,
 	UserID uuid.UUID,
@@ -478,7 +478,7 @@ func SelectOfficeUserTableByUserID(
 }
 
 // ## Delete by OfficeID
-func DeleteFromOfficeUserTableByOfficeID(
+func DeleteFromOfficeUserByOfficeID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -498,13 +498,13 @@ func DeleteFromOfficeUserTableByOfficeID(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoOfficeUserTableReturningOfficeID(
+func InsertIntoOfficeUserReturningOfficeID(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableOfficeUserModel,
 ) (*uuid.UUID, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoOfficeUserTableReturningOfficeIDUserIDResult is nil")
+		return nil, errors.New("InsertIntoOfficeUserReturningOfficeIDUserIDResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -553,7 +553,7 @@ func InsertIntoOfficeUserTableReturningOfficeID(
 
 // # Update
 // ## Update by OfficeID
-func UpdateOfficeUserTableByOfficeID(
+func UpdateOfficeUserByOfficeID(
 	ctx context.Context,
 	db DB,
 	OfficeID uuid.UUID,
@@ -593,7 +593,7 @@ func UpdateOfficeUserTableByOfficeID(
 }
 
 // ## Delete by UserID
-func DeleteFromOfficeUserTableByUserID(
+func DeleteFromOfficeUserByUserID(
 	ctx context.Context,
 	db DB,
 	UserID uuid.UUID,
@@ -613,13 +613,13 @@ func DeleteFromOfficeUserTableByUserID(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoOfficeUserTableReturningUserID(
+func InsertIntoOfficeUserReturningUserID(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableOfficeUserModel,
 ) (*uuid.UUID, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoOfficeUserTableReturningOfficeIDUserIDResult is nil")
+		return nil, errors.New("InsertIntoOfficeUserReturningOfficeIDUserIDResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -668,7 +668,7 @@ func InsertIntoOfficeUserTableReturningUserID(
 
 // # Update
 // ## Update by UserID
-func UpdateOfficeUserTableByUserID(
+func UpdateOfficeUserByUserID(
 	ctx context.Context,
 	db DB,
 	UserID uuid.UUID,

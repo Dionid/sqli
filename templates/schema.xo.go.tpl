@@ -167,15 +167,15 @@ func (t {{ $t.GoName }}Table) As(alias string) {{ $t.GoName }}Table {
 	return t
 }
 
-var {{ $t.GoName }}TableMeta = sqli.Table{
+var {{ $t.GoName }}Meta = sqli.Table{
 	TableName: `"{{ $t.SQLName }}"`,
 	TableAlias: `"{{ $t.SQLName }}"`,
 }
 
 var {{ $t.GoName }} = {{ $t.GoName }}Table{
-	Table: {{ $t.GoName }}TableMeta,
+	Table: {{ $t.GoName }}Meta,
 {{ range $t.Fields -}}
-	{{ .GoName }}: sqli.NewColumn[{{ .Type }}]({{ $t.GoName }}TableMeta, `"{{ .SQLName }}"`),
+	{{ .GoName }}: sqli.NewColumn[{{ .Type }}]({{ $t.GoName }}Meta, `"{{ .SQLName }}"`),
 {{ end }}
 }
 
@@ -249,7 +249,7 @@ func NewInsertable{{ $t.GoName }}Model(
 	}
 }
 
-func InsertInto{{ $t.GoName }}Table(
+func InsertInto{{ $t.GoName }}(
 	ctx context.Context,
 	db DB,
 	modelsList ...*Insertable{{ $t.GoName }}Model,
@@ -294,7 +294,7 @@ func InsertInto{{ $t.GoName }}Table(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertInto{{ $t.GoName }}TableReturningAll(
+func InsertInto{{ $t.GoName }}ReturningAll(
 	ctx context.Context,
 	db DB,
 	modelsList ...*Insertable{{ $t.GoName }}Model,
@@ -382,7 +382,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 {{ range $t.Fields }}
 	{{ if (and .IsSequence (not .IsPrimary)) }}
 		// ## Select one by sequence {{ .GoName }}
-		func Select{{ $t.GoName }}TableBy{{ .GoName }}(
+		func Select{{ $t.GoName }}By{{ .GoName }}(
 			ctx context.Context,
 			db DB,
 			{{ .GoName }} {{ .Type }},
@@ -420,7 +420,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 		}
 
 		// ## Delete by sequence {{ .GoName }}
-		func DeleteFrom{{ $t.GoName }}TableBy{{ .GoName }}(
+		func DeleteFrom{{ $t.GoName }}By{{ .GoName }}(
 			ctx context.Context,
 			db DB,
 			{{ .GoName }} {{ .Type }},
@@ -450,7 +450,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 {{ if or $i.IsUnique $i.IsPrimary }}
 	{{ if not (eq (len $i.Fields) 1) }}
 		// ## Select by compound
-		func SelectFrom{{ $i.Table.GoName }}TableBy{{ range $i.Fields }}{{ .GoName }}{{ end }}(
+		func SelectFrom{{ $i.Table.GoName }}By{{ range $i.Fields }}{{ .GoName }}{{ end }}(
 			ctx context.Context,
 			db DB,
 			{{- range $i.Fields }}
@@ -494,7 +494,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 		}
 
 		// ## Delete by compound
-		func DeleteFrom{{ $i.Table.GoName }}TableBy{{ range $i.Fields }}{{ .GoName }}{{ end }}(
+		func DeleteFrom{{ $i.Table.GoName }}By{{ range $i.Fields }}{{ .GoName }}{{ end }}(
 			ctx context.Context,
 			db DB,
 			{{- range $i.Fields }}
@@ -521,7 +521,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 		}
 
 		// ## Update by compound
-		func Update{{ $i.Table.GoName }}TableBy{{ range $i.Fields }}{{ .GoName }}{{ end }}(
+		func Update{{ $i.Table.GoName }}By{{ range $i.Fields }}{{ .GoName }}{{ end }}(
 			ctx context.Context,
 			db DB,
 			{{- range $i.Fields }}
@@ -559,19 +559,19 @@ func NewUpdatable{{ $t.GoName }}Model(
 			return db.ExecContext(ctx, query.SQL, query.Args...)
 		}
 
-		type InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result struct {
+		type InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result struct {
 			{{- range $i.Fields }}
 				{{ .GoName }} {{ .Type }} `json:"{{ .SQLName }}" db:"{{ .SQLName }}"`
 			{{- end -}}
 		}
 
-		func InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}(
+		func InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}(
 			ctx context.Context,
 			db DB,
 			modelsList ...*Insertable{{ $i.Table.GoName }}Model,
-		) (*InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result, error) {
+		) (*InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result, error) {
 			if modelsList == nil {
-				return nil, errors.New("InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
+				return nil, errors.New("InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
 			}
 
 			valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -613,7 +613,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 			}
 
 			row := db.QueryRowxContext(ctx, query.SQL, query.Args...)
-			returning := &InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result{}
+			returning := &InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result{}
 			err = row.Scan(returning);
 			if err != nil {
 				return nil, err
@@ -624,7 +624,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 		{{ range $i.Fields -}}
 			// ## Select by {{ .GoName }}
-			func Select{{ $i.Table.GoName }}TableBy{{ .GoName }}(
+			func Select{{ $i.Table.GoName }}By{{ .GoName }}(
 				ctx context.Context,
 				db DB,
 				{{ .GoName }} {{ .Type }},
@@ -666,7 +666,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 	{{ else }}
 		{{ range $i.Fields -}}
 			// ## Select by {{ .GoName }}
-			func Select{{ $i.Table.GoName }}TableBy{{ .GoName }}(
+			func Select{{ $i.Table.GoName }}By{{ .GoName }}(
 				ctx context.Context,
 				db DB,
 				{{ .GoName }} {{ .Type }},
@@ -706,7 +706,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 	{{ end }}
 	{{ range $i.Fields -}}
 		// ## Delete by {{ .GoName }}
-		func DeleteFrom{{ $i.Table.GoName }}TableBy{{ .GoName }}(
+		func DeleteFrom{{ $i.Table.GoName }}By{{ .GoName }}(
 			ctx context.Context,
 			db DB,
 			{{ .GoName }} {{ .Type }},
@@ -726,13 +726,13 @@ func NewUpdatable{{ $t.GoName }}Model(
 			return db.ExecContext(ctx, query.SQL, query.Args...)
 		}
 
-		func InsertInto{{ $i.Table.GoName }}TableReturning{{ .GoName }}(
+		func InsertInto{{ $i.Table.GoName }}Returning{{ .GoName }}(
 			ctx context.Context,
 			db DB,
 			modelsList ...*Insertable{{ $i.Table.GoName }}Model,
 		) (*{{ .Type }}, error) {
 			if modelsList == nil {
-				return nil, errors.New("InsertInto{{ $i.Table.GoName }}TableReturning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
+				return nil, errors.New("InsertInto{{ $i.Table.GoName }}Returning{{ range $i.Fields }}{{ .GoName }}{{ end }}Result is nil")
 			}
 
 			valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -783,7 +783,7 @@ func NewUpdatable{{ $t.GoName }}Model(
 
 		// # Update
 		// ## Update by {{ .GoName }}
-		func Update{{ $i.Table.GoName }}TableBy{{ .GoName }}(
+		func Update{{ $i.Table.GoName }}By{{ .GoName }}(
 			ctx context.Context,
 			db DB,
 			{{ .GoName }} {{ .Type }},

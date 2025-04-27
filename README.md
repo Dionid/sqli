@@ -8,7 +8,7 @@ Type-safe generative SQL Query Builder based on you DB schema.
 
 newUserId := uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")
 
-id, err := InsertIntoUserTableReturningID( // This is a generated function
+id, err := InsertIntoUserReturningID( // This is a generated function
     ctx,
     db,
     yourdb.InsertableUserModel{ 
@@ -22,15 +22,15 @@ println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 // ... and you can also use Dynamic Queries
 
 insertQuery, err := sqli.Query(
-    sqli.INSERT_INTO(yourdb.UserTable),
+    sqli.INSERT_INTO(yourdb.User),
     sqli.VALUES(
         sqli.ValueSet(
-            VALUE(yourdb.UserTable.ID, newUserId), // VALUE function will validate the value UUID type
-            VALUE(yourdb.UserTable.Name, "User 1"), // And this will validate the value string type
+            VALUE(yourdb.User.ID, newUserId), // VALUE function will validate the value UUID type
+            VALUE(yourdb.User.Name, "User 1"), // And this will validate the value string type
         ),
     ),
     sqli.RETURNING(
-        yourdb.UserTable.ID,
+        yourdb.User.ID,
     ),
 )
 
@@ -83,7 +83,7 @@ SQLi generates:
 
 newUserId := uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")
 
-id, err := InsertIntoUserTableReturningID(
+id, err := InsertIntoUserReturningID(
 	ctx,
 	db,
     InsertableUserModel{
@@ -96,7 +96,7 @@ println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
 // Not lets select it by primary key
 
-userByPrimaryKey, err := SelectUserTableByID(
+userByPrimaryKey, err := SelectUserByID(
     ctx,
     db,
     id,
@@ -106,7 +106,7 @@ println(userByPrimaryKey) // {ID: "ebb5dd71-1214-40dc-b602-bb9af74b3aae", Name: 
 
 // Now lets update it
 
-err = UpdateUserTableByID(
+err = UpdateUserByID(
     ctx,
     db,
     id,
@@ -117,7 +117,7 @@ err = UpdateUserTableByID(
 
 // And delete
 
-err = DeleteFromUserTableByID(
+err = DeleteFromUserByID(
     ctx,
     db,
     id,
@@ -135,15 +135,15 @@ err = DeleteFromUserTableByID(
 newUserId := uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")
 
 insertQuery, err := Query(
-    INSERT_INTO(UserTable),
+    INSERT_INTO(User),
     VALUES(
         ValueSet(
-            VALUE(UserTable.ID, newUserId), // VALUE function will validate the value UUID type
-            VALUE(UserTable.Name, "User 1"), // And this will validate the value string type
+            VALUE(User.ID, newUserId), // VALUE function will validate the value UUID type
+            VALUE(User.Name, "User 1"), // And this will validate the value string type
         ),
     ),
     RETURNING(
-        UserTable.ID,
+        User.ID,
     ),
 )
 
@@ -165,11 +165,11 @@ println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
 selectQuery, err := Query(
     SELECT(
-        UserTable.AllColumns(), // *
+        User.AllColumns(), // *
     ),
-    FROM(UserTable),
+    FROM(User),
     WHERE(
-        EQUAL(UserTable.ID, id),
+        EQUAL(User.ID, id),
     ),
 )
 
@@ -187,12 +187,12 @@ println(user) // {ID: "ebb5dd71-1214-40dc-b602-bb9af74b3aae", Name: "User 1"}
 // Now lets update it
 
 query, err := Query(
-    UPDATE(UserTable),
+    UPDATE(User),
     SET(
-        SET_VALUE(UserTable.Name, "Updated User 1"),
+        SET_VALUE(User.Name, "Updated User 1"),
     ),
     WHERE(
-        EQUAL(UserTable.ID, id),
+        EQUAL(User.ID, id),
     ),
 )
 
@@ -205,9 +205,9 @@ println(row.RowsAffected()) // 1
 // And delete
 
 query, err := Query(
-    DELETE_FROM(UserTable),
+    DELETE_FROM(User),
     WHERE(
-        EQUAL(UserTable.ID, id),
+        EQUAL(User.ID, id),
     ),
 )
 

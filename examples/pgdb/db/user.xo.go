@@ -37,20 +37,20 @@ func (t UserTable) As(alias string) UserTable {
 	return t
 }
 
-var UserTableMeta = sqli.Table{
+var UserMeta = sqli.Table{
 	TableName:  `"user"`,
 	TableAlias: `"user"`,
 }
 
 var User = UserTable{
-	Table:     UserTableMeta,
-	ID:        sqli.NewColumn[uuid.UUID](UserTableMeta, `"id"`),
-	Name:      sqli.NewColumn[string](UserTableMeta, `"name"`),
-	Email:     sqli.NewColumn[string](UserTableMeta, `"email"`),
-	Password:  sqli.NewColumn[string](UserTableMeta, `"password"`),
-	CreatedAt: sqli.NewColumn[time.Time](UserTableMeta, `"created_at"`),
-	UpdatedAt: sqli.NewColumn[sql.NullTime](UserTableMeta, `"updated_at"`),
-	Role:      sqli.NewColumn[string](UserTableMeta, `"role"`),
+	Table:     UserMeta,
+	ID:        sqli.NewColumn[uuid.UUID](UserMeta, `"id"`),
+	Name:      sqli.NewColumn[string](UserMeta, `"name"`),
+	Email:     sqli.NewColumn[string](UserMeta, `"email"`),
+	Password:  sqli.NewColumn[string](UserMeta, `"password"`),
+	CreatedAt: sqli.NewColumn[time.Time](UserMeta, `"created_at"`),
+	UpdatedAt: sqli.NewColumn[sql.NullTime](UserMeta, `"updated_at"`),
+	Role:      sqli.NewColumn[string](UserMeta, `"role"`),
 }
 
 // # Constants
@@ -141,7 +141,7 @@ func NewInsertableUserModel(
 	}
 }
 
-func InsertIntoUserTable(
+func InsertIntoUser(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableUserModel,
@@ -190,7 +190,7 @@ func InsertIntoUserTable(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoUserTableReturningAll(
+func InsertIntoUserReturningAll(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableUserModel,
@@ -288,7 +288,7 @@ func NewUpdatableUserModel(
 }
 
 // ## Select by Email
-func SelectUserTableByEmail(
+func SelectUserByEmail(
 	ctx context.Context,
 	db DB,
 	Email string,
@@ -326,7 +326,7 @@ func SelectUserTableByEmail(
 }
 
 // ## Delete by Email
-func DeleteFromUserTableByEmail(
+func DeleteFromUserByEmail(
 	ctx context.Context,
 	db DB,
 	Email string,
@@ -346,13 +346,13 @@ func DeleteFromUserTableByEmail(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoUserTableReturningEmail(
+func InsertIntoUserReturningEmail(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableUserModel,
 ) (*string, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoUserTableReturningEmailResult is nil")
+		return nil, errors.New("InsertIntoUserReturningEmailResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -407,7 +407,7 @@ func InsertIntoUserTableReturningEmail(
 
 // # Update
 // ## Update by Email
-func UpdateUserTableByEmail(
+func UpdateUserByEmail(
 	ctx context.Context,
 	db DB,
 	Email string,
@@ -456,7 +456,7 @@ func UpdateUserTableByEmail(
 }
 
 // ## Select by ID
-func SelectUserTableByID(
+func SelectUserByID(
 	ctx context.Context,
 	db DB,
 	ID uuid.UUID,
@@ -494,7 +494,7 @@ func SelectUserTableByID(
 }
 
 // ## Delete by ID
-func DeleteFromUserTableByID(
+func DeleteFromUserByID(
 	ctx context.Context,
 	db DB,
 	ID uuid.UUID,
@@ -514,13 +514,13 @@ func DeleteFromUserTableByID(
 	return db.ExecContext(ctx, query.SQL, query.Args...)
 }
 
-func InsertIntoUserTableReturningID(
+func InsertIntoUserReturningID(
 	ctx context.Context,
 	db DB,
 	modelsList ...*InsertableUserModel,
 ) (*uuid.UUID, error) {
 	if modelsList == nil {
-		return nil, errors.New("InsertIntoUserTableReturningIDResult is nil")
+		return nil, errors.New("InsertIntoUserReturningIDResult is nil")
 	}
 
 	valueSetList := make([]sqli.ValuesSetSt, len(modelsList))
@@ -575,7 +575,7 @@ func InsertIntoUserTableReturningID(
 
 // # Update
 // ## Update by ID
-func UpdateUserTableByID(
+func UpdateUserByID(
 	ctx context.Context,
 	db DB,
 	ID uuid.UUID,
