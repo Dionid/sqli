@@ -48,15 +48,17 @@ println(id) // ebb5dd71-1214-40dc-b602-bb9af74b3aae
 
 # Install
 
-1. By go install
+## By go install
 
 ```shell
 go install github.com/Dionid/sqli/cmd/sqli@latest
 ```
 
-2. Download from [Release](https://github.com/Dionid/sqli/releases)
+## Releases
 
-3. From sources
+Download from [Release](https://github.com/Dionid/sqli/releases)
+
+## From sources
 
 ```shell
 git clone git@github.com:Dionid/sqli.git
