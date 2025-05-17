@@ -79,8 +79,9 @@ type ColumnType interface {
 }
 
 type Table struct {
-	TableName  string
-	TableAlias string
+	TableName   string
+	TableAlias  string
+	ColumnNames map[string]bool
 }
 
 func NewTableSt(name string, alias string) Table {
@@ -126,10 +127,26 @@ func (t Table) AllColumns() Column[string] {
 	return AllColumn
 }
 
+func (t Table) GetColumnsNames() []string {
+	names := []string{}
+
+	for name := range t.ColumnNames {
+		names = append(names, name)
+	}
+
+	return names
+}
+
+func (t Table) GetColumnsNamesMap() map[string]bool {
+	return t.ColumnNames
+}
+
 type TableType interface {
 	GetAlias() string
 	GetName() string
 	GetNameWithAlias() string
+	GetColumnsNames() []string
+	GetColumnsNamesMap() map[string]bool
 }
 
 type ColumnWithTable struct {

@@ -881,6 +881,39 @@ func TestSelectCount(t *testing.T) {
 		t.Errorf("Args is not correct: %d", len(query.Args))
 	}
 }
+func TestSelectFrom(t *testing.T) {
+	query, err := SELECT_FROM(
+		User,
+		User.ID,
+	)
+
+	if err != nil {
+		t.Errorf("Error is not nil: %s", err)
+	}
+
+	if len(query.Args) != 0 {
+		t.Errorf("Args is not correct: %d", len(query.Args))
+	}
+
+	if query.SQL != `SELECT "user"."id" FROM "user" AS "user"` {
+		t.Errorf("Query is not correct: %s", query)
+	}
+}
+
+func TestSelectFromE(t *testing.T) {
+	_, err := SELECT_FROM(
+		User,
+		OfficeUser.OfficeID,
+	)
+
+	if err == nil {
+		t.Errorf("Error nil: %s", err)
+	}
+
+	if err.Error() != "(validation) column \"office_id\" not found in table \"user\"" {
+		t.Errorf("Validation error not as expected: %s", err)
+	}
+}
 
 // TODO: # SELECT SUM
 // ...

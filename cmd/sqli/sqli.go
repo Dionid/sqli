@@ -95,7 +95,7 @@ func main() {
 		"out",
 		"o",
 		"db",
-		"out path (default 'models')",
+		"out path",
 	)
 
 	generateCmd.Flags().StringVarP(
