@@ -49,6 +49,58 @@ func FROM_RAW(sq Statement) Statement {
 	}
 }
 
+// # SELECT FROM
+
+// SELECT_FROM validates the columns against the table's column names and returns a Statement.
+// If any column is not found in the table, an error is returned.
+// This function is useful for ensuring that the columns being selected are valid
+func SELECT_FROM(
+	table TableType,
+	columns ...ColumnType,
+) (Statement, error) {
+	columnsStr := ""
+
+	for i, column := range columns {
+		if !table.GetColumnsNamesMap()[column.GetName()] {
+			return Statement{}, &ValidationError{
+				fmt.Sprintf("column %s not found in table %s", column.GetName(), table.GetName()),
+			}
+		}
+
+		if len(columns) > 1 {
+			if i == len(columns)-1 {
+				columnsStr += column.GetAliasWithTableAlias()
+			} else {
+				columnsStr += column.GetAliasWithTableAlias() + ", "
+			}
+		} else {
+			columnsStr += column.GetAliasWithTableAlias()
+		}
+	}
+
+	return Statement{
+		SQL:  fmt.Sprintf("SELECT %s FROM %s", columnsStr, table.GetNameWithAlias()),
+		Args: []interface{}{},
+	}, nil
+}
+
+// SELECT_FROM_P same as SELECT_FROM, but panic
+func SELECT_FROM_P(
+	table TableType,
+	columns ...ColumnType,
+) Statement {
+	stm, err := SELECT_FROM(
+		table,
+		columns...,
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return stm
+}
+
 // ORDER BY
 
 type OrderDirection struct {

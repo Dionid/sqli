@@ -33,6 +33,12 @@ func (t GooseDbVersionTable) As(alias string) GooseDbVersionTable {
 var GooseDbVersionMeta = sqli.Table{
 	TableName:  `"goose_db_version"`,
 	TableAlias: `"goose_db_version"`,
+	ColumnNames: map[string]bool{
+		`"id"`:         true,
+		`"version_id"`: true,
+		`"is_applied"`: true,
+		`"tstamp"`:     true,
+	},
 }
 
 var GooseDbVersion = GooseDbVersionTable{

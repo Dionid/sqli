@@ -170,6 +170,11 @@ func (t {{ $t.GoName }}Table) As(alias string) {{ $t.GoName }}Table {
 var {{ $t.GoName }}Meta = sqli.Table{
 	TableName: `"{{ $t.SQLName }}"`,
 	TableAlias: `"{{ $t.SQLName }}"`,
+	ColumnNames: map[string]bool{
+		{{ range $t.Fields -}}
+			`"{{ .SQLName }}"`: true,
+		{{ end }}
+	},
 }
 
 var {{ $t.GoName }} = {{ $t.GoName }}Table{

@@ -278,6 +278,73 @@ println(row.RowsAffected()) // 1
 
 For more examples, see the [examples](./examples) folder.
 
+# What is the difference between SQLi and other query builders?
+
+## Generative
+
+## Type-safe
+
+Every function is generated for each table in your DB schema and typed according to the table schema.
+
+```go
+
+EQUAL(User.ID, 123) // This will not compile, because ID is UUID
+EQUAL(User.ID, uuid.MustParse("ebb5dd71-1214-40dc-b602-bb9af74b3aae")) // This will compile
+
+```
+
+## Extensible
+
+Most Query Builders uses dot notation to build queries, like `db.Table("user").Where("id = ?", id)`,
+but SQLi uses functional approach `Query(SELECT(User.ID), FROM(User) WHERE(EQUAL(User.ID, id))` where
+each function needs to return a `Statement` struct, that contains SQL and arguments.
+
+That gives us ability to extend the library and add new functions, like `JSON_AGG`, `SUM`, `COUNT`, etc.
+WITHOUT even commiting to the library itself.
+
+Example:
+
+We got some database that has operators like `MERGE table WHERE ... COLLISION free | restricted`, but we
+don't has this functions in SQLi, so we can create our own functions and use them in the query builder:
+
+```go
+func MERGE(table NameWithAliaser) string {
+    stmt := fmt.Sprintf("FROM %s", table.GetNameWithAlias())
+
+    return sqli.Statement{
+		SQL:  stmt,
+		Args: []interface{}{},
+	}
+}
+
+func COLLISION_FREE() string {
+    return sqli.Statement{
+		SQL:  "COLLISION free",
+		Args: []interface{}{},
+	}
+}
+
+func COLLISION_RESTRICTED() string {
+    return sqli.Statement{
+		SQL:  "COLLISION restricted",
+		Args: []interface{}{},
+	}
+}
+
+func main() {
+    query := Query(
+        MERGE("table"),
+        WHERE(
+            EQUAL("id", 1),
+        ),
+        COLLISION_FREE(),
+    )
+    fmt.Println(query.SQL) // MERGE table WHERE id = 1 COLLISION free
+}
+```
+
+So you don't even need to wait for the library to implement this functions, you can do it yourself.
+
 # TODO
 
 1. Upsert
@@ -286,3 +353,4 @@ For more examples, see the [examples](./examples) folder.
 1. InsertOnConflict
 1. CopySimple
 1. Add pgx types
+1. Safe-mode (validating every field)

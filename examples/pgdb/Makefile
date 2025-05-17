@@ -8,6 +8,9 @@ DB_PG="postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${P
 sqli:
 	sqli generate ${DB_PG}
 
+sqli-dev:
+	cd ../../cmd/sqli && go run . generate ${DB_PG} -o ../../examples/pgdb/db
+
 # CRM DB
 
 migrate-up:
@@ -28,12 +31,22 @@ migrate-create:
 
 # Tests
 
-prepare:
+prepare-test:
 	docker-compose -f docker-compose.yaml up -d
 	docker logs database 2>&1 | grep -q "database system is ready to accept connections"
 	make migrate-reup
 	make sqli
 
+prepare-test-dev:
+	docker-compose -f docker-compose.yaml up -d
+	docker logs database 2>&1 | grep -q "database system is ready to accept connections"
+	make migrate-reup
+	make sqli-dev
+
 test:
-	make prepare
+	make prepare-test
+	grc go test . -count=1
+
+test-dev:
+	make prepare-test-dev
 	grc go test . -count=1

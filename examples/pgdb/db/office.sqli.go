@@ -34,6 +34,12 @@ func (t OfficeTable) As(alias string) OfficeTable {
 var OfficeMeta = sqli.Table{
 	TableName:  `"office"`,
 	TableAlias: `"office"`,
+	ColumnNames: map[string]bool{
+		`"id"`:         true,
+		`"name"`:       true,
+		`"created_at"`: true,
+		`"updated_at"`: true,
+	},
 }
 
 var Office = OfficeTable{

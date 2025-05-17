@@ -40,6 +40,15 @@ func (t UserTable) As(alias string) UserTable {
 var UserMeta = sqli.Table{
 	TableName:  `"user"`,
 	TableAlias: `"user"`,
+	ColumnNames: map[string]bool{
+		`"id"`:         true,
+		`"name"`:       true,
+		`"email"`:      true,
+		`"password"`:   true,
+		`"created_at"`: true,
+		`"updated_at"`: true,
+		`"role"`:       true,
+	},
 }
 
 var User = UserTable{
