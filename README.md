@@ -1,3 +1,5 @@
+![logo.png](./logo.png)
+
 # SQLi
 
 Type-safe generative SQL Query Builder based on you DB schema.
